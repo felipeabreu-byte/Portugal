@@ -1,7 +1,5 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { prisma } from "./prisma";
-import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
     session: {
@@ -21,6 +19,9 @@ export const authOptions: NextAuthOptions = {
                 if (!credentials?.email || !credentials?.password) {
                     throw new Error("Invalid credentials");
                 }
+
+                const { prisma } = await import("./prisma");
+                const bcrypt = (await import("bcryptjs")).default;
 
                 const user = await prisma.user.findUnique({
                     where: {
