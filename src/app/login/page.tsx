@@ -25,8 +25,18 @@ export default function LoginPage() {
                 redirect: false,
             });
 
+            console.log("SignIn response:", res);
+
             if (res?.error) {
+                console.error("Login error:", res.error);
                 setError("Credenciais inválidas");
+                setLoading(false);
+                return;
+            }
+
+            if (!res) {
+                console.error("No response from signIn");
+                setError("Sem resposta do servidor");
                 setLoading(false);
                 return;
             }
