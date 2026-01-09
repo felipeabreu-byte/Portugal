@@ -29,5 +29,5 @@ export async function POST(req: Request) {
         data: { targetAmount: Number(targetAmount) }
     });
 
-    return NextResponse.json({ message: "Updated" });
+    return NextResponse.json({ message: "Update" });
 }

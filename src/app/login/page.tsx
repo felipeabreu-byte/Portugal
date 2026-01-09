@@ -19,32 +19,36 @@ export default function LoginPage() {
         setError("");
 
         try {
+            console.log("Attempting login with:", email);
             const res = await signIn("credentials", {
                 email,
                 password,
                 redirect: false,
             });
 
-            console.log("SignIn response:", res);
+            console.log("SignIn response details:", JSON.stringify(res, null, 2));
 
             if (res?.error) {
-                console.error("Login error:", res.error);
+                console.error("Login error confirmed:", res.error);
                 setError("Credenciais inválidas");
                 setLoading(false);
                 return;
             }
 
-            if (!res) {
-                console.error("No response from signIn");
-                setError("Sem resposta do servidor");
+            if (!res?.ok) {
+                console.error("Login response not OK:", res);
+                setError("Erro ao conectar com o servidor");
                 setLoading(false);
                 return;
             }
 
-            router.push("/dashboard");
-            router.refresh();
+            console.log("Login successful, redirecting to /dashboard via window.location...");
+            // Force a hard reload to ensure cookies are set correctly
+            window.location.href = "/dashboard";
+
         } catch (err) {
-            setError("Ocorreu um erro");
+            console.error("Unexpected error during login:", err);
+            setError("Ocorreu um erro inesperado");
             setLoading(false);
         }
     };
