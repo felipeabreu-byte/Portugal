@@ -23,12 +23,24 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Invalid credentials");
                 }
 
-                console.log("Searching for user...");
-                const user = await prisma.user.findUnique({
-                    where: {
-                        email: credentials.email,
-                    },
-                });
+                console.log("Searching for user:", credentials.email);
+                let user;
+
+                try {
+                    user = await prisma.user.findUnique({
+                        where: {
+                            email: credentials.email,
+                        },
+                    });
+                } catch (error: any) {
+                    console.error("Database error in authorize:", error);
+                    // Differentiate between connection error and other errors
+                    if (error.code === 'P1001') {
+                        throw new Error("Can't reach database server");
+                    }
+                    throw new Error(error.message || "Database connection failed");
+                }
+
                 console.log("User found:", !!user);
 
                 if (!user || !user.password) {
