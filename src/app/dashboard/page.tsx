@@ -5,7 +5,7 @@ import { LucideEuro, LucideTrendingUp, LucideTarget, LucideWallet } from "lucide
 import { redirect } from "next/navigation";
 import { TransactionList } from "@/components/TransactionList";
 import { SummaryCard } from "@/components/SummaryCard";
-import { EuroAdviceCard } from "@/components/EuroAdviceCard";
+import { LiveEuroAdvice } from "@/components/LiveEuroAdvice";
 
 export const dynamic = "force-dynamic";
 
@@ -39,26 +39,7 @@ export default async function DashboardPage() {
     const remaining = Math.max(0, targetAmount - totalEur);
     const progress = targetAmount > 0 ? Math.min(100, (totalEur / targetAmount) * 100) : 0;
 
-    // Fetch Live Euro Rate (Commercial)
-    let liveRate = 0;
-    try {
-        console.log("Fetching Euro Rate...");
-        const res = await fetch("https://economia.awesomeapi.com.br/last/EUR-BRLT", {
-            cache: 'no-store',
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            }
-        });
-        const data = await res.json();
-        console.log("Euro Data:", JSON.stringify(data));
-
-        if (data.EURBRLT) {
-            liveRate = Number(data.EURBRLT.ask);
-            console.log("Live Rate:", liveRate);
-        }
-    } catch (e) {
-        console.error("Error fetching euro rate", e);
-    }
+    // Live Rate is now fetched client-side to avoid Vercel IP blocks
 
     return (
         <div className="space-y-6">
@@ -66,12 +47,10 @@ export default async function DashboardPage() {
                 <h2 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h2>
             </div>
 
-            {/* Live Advice Card (Full Width on mobile, span 2 on desktop if needed) */}
-            {liveRate > 0 && (
-                <div className="mb-6">
-                    <EuroAdviceCard currentRate={liveRate} />
-                </div>
-            )}
+            {/* Live Advice Card (Client Side) */}
+            <div className="mb-6">
+                <LiveEuroAdvice />
+            </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <SummaryCard
