@@ -106,9 +106,6 @@ export default function LoginPage() {
                             {loading ? "Entrando..." : "Entrar"}
                         </button>
                     </div>
-                    <div className="text-center text-sm">
-                        </Link>
-                    </div>
                 </form>
             </div>
         </div>
