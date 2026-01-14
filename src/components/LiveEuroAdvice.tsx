@@ -7,16 +7,31 @@ export function LiveEuroAdvice() {
     const [rate, setRate] = useState<number>(0);
     const [loading, setLoading] = useState(true);
 
+    const [error, setError] = useState<string | null>(null);
+
     useEffect(() => {
         const fetchRate = async () => {
             try {
-                const res = await fetch("https://economia.awesomeapi.com.br/last/EUR-BRLT");
+                // Fetch from our own API route
+                console.log("Fetching /api/exchange-rate...");
+                const res = await fetch("/api/exchange-rate");
+
+                if (!res.ok) {
+                    const errText = await res.text();
+                    throw new Error(`Status: ${res.status} - ${errText}`);
+                }
+
                 const data = await res.json();
+                console.log("API Data:", data);
+
                 if (data.EURBRLT) {
                     setRate(Number(data.EURBRLT.ask));
+                } else {
+                    throw new Error("Invalid data format: EURBRLT missing");
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Failed to fetch Euro rate:", error);
+                setError(error.message);
             } finally {
                 setLoading(false);
             }
@@ -24,10 +39,6 @@ export function LiveEuroAdvice() {
 
         fetchRate();
     }, []);
-
-    if (loading || rate === 0) {
-        return null; // Or a skeleton if preferred, but user had it hidden on 0 before
-    }
 
     return <EuroAdviceCard currentRate={rate} />;
 }
