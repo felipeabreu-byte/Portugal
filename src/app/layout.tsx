@@ -6,7 +6,7 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Euro Tracker",
+  title: "Plano Portugal",
   description: "Gerencie suas compras de Euro",
 };
 

@@ -19,32 +19,38 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials) {
                 console.log("Authorize called with:", credentials?.email);
+
                 if (!credentials?.email || !credentials?.password) {
-                    throw new Error("Invalid credentials");
+                    console.log("Missing credentials");
+                    throw new Error("Credenciais inválidas");
                 }
 
-                console.log("Searching for user:", credentials.email);
+                // Normalize email
+                const email = credentials.email.toLowerCase().trim();
+                console.log("Searching for user with normalized email:", email);
+
                 let user;
 
                 try {
                     user = await prisma.user.findUnique({
                         where: {
-                            email: credentials.email,
+                            email: email,
                         },
                     });
                 } catch (error: any) {
                     console.error("Database error in authorize:", error);
                     // Differentiate between connection error and other errors
                     if (error.code === 'P1001') {
-                        throw new Error("Can't reach database server");
+                        throw new Error("Erro de conexão com o banco de dados");
                     }
-                    throw new Error(error.message || "Database connection failed");
+                    throw new Error(error.message || "Falha na conexão com o banco de dados");
                 }
 
                 console.log("User found:", !!user);
 
                 if (!user || !user.password) {
-                    throw new Error("Invalid credentials");
+                    console.log("User not found or no password set");
+                    throw new Error("Credenciais inválidas");
                 }
 
                 const isCorrectPassword = await bcrypt.compare(
@@ -79,15 +85,4 @@ export const authOptions: NextAuthOptions = {
         },
     },
     secret: process.env.NEXTAUTH_SECRET,
-    cookies: {
-        sessionToken: {
-            name: `__Secure-next-auth.session-token`,
-            options: {
-                httpOnly: true,
-                sameSite: "lax",
-                path: "/",
-                secure: process.env.NODE_ENV === "production",
-            },
-        },
-    },
 };

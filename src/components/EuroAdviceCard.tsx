@@ -40,21 +40,24 @@ export function EuroAdviceCard({ currentRate }: EuroAdviceProps) {
     }
 
     return (
-        <div className={clsx("rounded-xl border p-6 flex flex-col justify-between shadow-sm transition-all", colorClass)}>
+        <div className={clsx("rounded-xl border p-4 flex flex-row items-center justify-between shadow-sm transition-all h-[100px]", colorClass)}>
             <div>
-                <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium opacity-80">Euro Turismo Hoje</span>
+                <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-medium opacity-80 uppercase tracking-wider">Euro Turismo</span>
                     {icon}
                 </div>
-                <div className="text-3xl font-bold">
+                <div className="text-2xl font-bold leading-none">
                     R$ {currentRate.toLocaleString('pt-BR', { minimumFractionDigits: 3 })}
                 </div>
+                <p className="font-semibold text-sm mt-1 text-gray-800">{message}</p>
             </div>
 
-            <div className="mt-4 pt-4 border-t border-black/5">
-                <p className="font-semibold text-lg leading-tight">{message}</p>
-                <p className="text-xs mt-1 opacity-70">
-                    Referência: R$ {STANDARD_RATE.toFixed(2)} ({diffPercent > 0 ? '+' : ''}{diffPercent.toFixed(1)}%)
+            <div className="text-right flex flex-col justify-end h-full">
+                <p className="text-[10px] opacity-70">
+                    Ref: R$ {STANDARD_RATE.toFixed(2)}
+                </p>
+                <p className={clsx("text-[10px] font-medium", diffPercent > 0 ? "text-red-500" : "text-green-500")}>
+                    {diffPercent > 0 ? '+' : ''}{diffPercent.toFixed(1)}%
                 </p>
             </div>
         </div>

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { Loader2, ArrowLeft } from "lucide-react";
 
 export default function SettingsPage() {
     const router = useRouter();
@@ -49,6 +50,13 @@ export default function SettingsPage() {
     return (
         <div className="max-w-2xl mx-auto">
             <div className="mb-6">
+                <Link
+                    href="/dashboard"
+                    className="inline-flex items-center text-sm text-gray-500 hover:text-blue-600 mb-4 transition-colors"
+                >
+                    <ArrowLeft className="w-4 h-4 mr-1" />
+                    Voltar ao Dashboard
+                </Link>
                 <h2 className="text-2xl font-bold text-gray-900">Configurações</h2>
                 <p className="text-gray-500">Defina seus objetivos</p>
             </div>

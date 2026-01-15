@@ -61,7 +61,7 @@ export default function LoginPage() {
                         <LucideEuro className="h-6 w-6 text-blue-600" />
                     </div>
                     <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-                        Euro Tracker
+                        Plano Portugal
                     </h2>
                     <p className="mt-2 text-sm text-gray-600">
                         Entre para gerenciar suas compras

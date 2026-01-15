@@ -37,13 +37,13 @@ export function LiveEuroAdvice() {
 
     if (loading) {
         return (
-            <div className="rounded-xl border p-6 flex flex-col justify-between shadow-sm bg-gray-50 h-[180px] animate-pulse">
-                <div className="space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                    <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+            <div className="rounded-xl border p-4 flex items-center justify-between shadow-sm bg-gray-50 h-[100px] animate-pulse">
+                <div className="space-y-2 w-1/3">
+                    <div className="h-3 bg-gray-200 rounded w-full"></div>
+                    <div className="h-6 bg-gray-200 rounded w-2/3"></div>
                 </div>
-                <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="space-y-2 w-1/3 flex flex-col items-end">
+                    <div className="h-3 bg-gray-200 rounded w-full"></div>
                     <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                 </div>
             </div>
@@ -52,8 +52,8 @@ export function LiveEuroAdvice() {
 
     if (error) {
         return (
-            <div className="rounded-xl border p-6 flex items-center justify-center shadow-sm bg-red-50 text-red-600 h-[180px]">
-                <p>Erro ao carregar cotação</p>
+            <div className="rounded-xl border p-4 flex items-center justify-center shadow-sm bg-red-50 text-red-600 h-[100px]">
+                <p className="text-sm">Erro ao carregar cotação</p>
             </div>
         );
     }

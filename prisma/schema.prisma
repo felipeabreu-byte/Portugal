@@ -22,6 +22,7 @@ model User {
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime   @updatedAt @map("updated_at")
   purchases    Purchase[]
+  checklistItems ChecklistItem[]
 
   @@map("users")
 }
@@ -47,4 +48,45 @@ model Purchase {
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("purchases")
+}
+
+enum ChecklistStatus {
+  PENDING
+  COMPLETED
+  NOT_APPLICABLE
+}
+
+enum ChecklistPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model ChecklistCategory {
+  id          String          @id @default(uuid())
+  title       String
+  order       Int             @default(0)
+  items       ChecklistItem[]
+
+  @@map("checklist_categories")
+}
+
+model ChecklistItem {
+  id             String            @id @default(uuid())
+  categoryId     String            @map("category_id")
+  userId         String            @map("user_id") // Optional: if we want per-user checklists. Assuming yes for a travel app.
+  title          String
+  description    String?
+  status         ChecklistStatus   @default(PENDING)
+  priority       ChecklistPriority @default(MEDIUM)
+  suggestedDate  DateTime?         @map("suggested_date")
+  attachmentUrl  String?           @map("attachment_url")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  category       ChecklistCategory @relation(fields: [categoryId], references: [id])
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("checklist_items")
 }
