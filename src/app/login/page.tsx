@@ -61,10 +61,10 @@ export default function LoginPage() {
                         <LucideEuro className="h-6 w-6 text-blue-600" />
                     </div>
                     <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-                        Plano Portugal
+                        Euro Tracker
                     </h2>
                     <p className="mt-2 text-sm text-gray-600">
-                        Entre para gerenciar suas compras
+                        Entre para vericar as nossas compras
                     </p>
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -105,11 +105,6 @@ export default function LoginPage() {
                         >
                             {loading ? "Entrando..." : "Entrar"}
                         </button>
-                    </div>
-                    <div className="text-center text-sm">
-                        <Link href="/register" className="font-semibold text-blue-600 hover:text-blue-500">
-                            Não tem uma conta? Crie uma agora
-                        </Link>
                     </div>
                 </form>
             </div>
