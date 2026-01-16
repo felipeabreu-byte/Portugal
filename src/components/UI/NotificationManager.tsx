@@ -49,6 +49,10 @@ export function NotificationManager({ suggestions }: NotificationManagerProps) {
     };
 
     useEffect(() => {
+        // Frequency check: Only show once per session
+        const hasShown = sessionStorage.getItem('plano_portugal_notification_shown_session');
+        if (hasShown) return;
+
         // Logic to pick a notification to show.
         // For now, let's show the first WARNING or ACTION notification after 2 seconds
         const target = suggestions.find(s => s.type === 'WARNING' || s.type === 'ACTION');
@@ -58,6 +62,7 @@ export function NotificationManager({ suggestions }: NotificationManagerProps) {
                 setActiveNotification(target);
                 setIsVisible(true);
                 playNotificationSound();
+                sessionStorage.setItem('plano_portugal_notification_shown_session', 'true');
             }, 2000);
             return () => clearTimeout(timer);
         }

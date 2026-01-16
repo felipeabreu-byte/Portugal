@@ -3,7 +3,7 @@
 import { Suggestion } from "@/lib/suggestions";
 import { Lightbulb, AlertCircle, Info, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface SmartSuggestionsProps {
     suggestions: Suggestion[];
@@ -12,12 +12,23 @@ interface SmartSuggestionsProps {
 export function SmartSuggestions({ suggestions }: SmartSuggestionsProps) {
     const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
 
+    useEffect(() => {
+        const saved = localStorage.getItem('plano_portugal_dismissed_suggestions');
+        if (saved) {
+            setDismissedIds(new Set(JSON.parse(saved)));
+        }
+    }, []);
+
     const activeSuggestions = suggestions.filter(s => !dismissedIds.has(s.id));
 
     if (activeSuggestions.length === 0) return null;
 
     const dismissSuggestion = (id: string) => {
-        setDismissedIds(prev => new Set(prev).add(id));
+        setDismissedIds(prev => {
+            const newSet = new Set(prev).add(id);
+            localStorage.setItem('plano_portugal_dismissed_suggestions', JSON.stringify(Array.from(newSet)));
+            return newSet;
+        });
     };
 
     return (

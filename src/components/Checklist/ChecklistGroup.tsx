@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, Plus } from 'lucide-react';
+import { ChevronDown, Plus, Trash2, Pencil } from 'lucide-react';
 import { ChecklistItem } from './ChecklistItem';
 import { cn } from '@/lib/utils';
-import { addChecklistItem } from '@/actions/checklist';
+import { addChecklistItem, deleteChecklistCategory, updateChecklistCategory } from '@/actions/checklist';
 import { ChecklistCategory, ChecklistItem as PrismaChecklistItem } from '@prisma/client';
+import { ConfirmationModal } from '@/components/UI/ConfirmationModal';
+import { EditModal } from '@/components/UI/EditModal';
 
 interface CategoryWithItems extends ChecklistCategory {
     items: PrismaChecklistItem[];
@@ -19,6 +21,8 @@ export function ChecklistGroup({ category }: ChecklistGroupProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
     const [newItemTitle, setNewItemTitle] = useState('');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const completedCount = category.items.filter(i => i.status === 'COMPLETED').length;
     const totalCount = category.items.filter(i => i.status !== 'NOT_APPLICABLE').length;
@@ -33,11 +37,19 @@ export function ChecklistGroup({ category }: ChecklistGroupProps) {
         setIsAdding(false);
     };
 
+    const confirmDeleteCategory = async () => {
+        await deleteChecklistCategory(category.id);
+    };
+
+    const handleEditCategory = async (newTitle: string) => {
+        await updateChecklistCategory(category.id, newTitle);
+    };
+
     return (
         <div className="bg-white rounded-xl border border-zinc-100 shadow-sm overflow-hidden mb-4">
-            <button
+            <div
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between p-4 bg-white hover:bg-zinc-50 transition-colors"
+                className="w-full flex items-center justify-between p-4 bg-white hover:bg-zinc-50 transition-colors cursor-pointer"
             >
                 <div className="flex items-center gap-4">
                     <div className={cn(
@@ -51,11 +63,33 @@ export function ChecklistGroup({ category }: ChecklistGroupProps) {
                         <p className="text-xs text-zinc-500">{completedCount}/{totalCount} items concluídos</p>
                     </div>
                 </div>
-                <ChevronDown
-                    className={cn("text-zinc-400 transition-transform", isOpen && "rotate-180")}
-                    size={20}
-                />
-            </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsEditModalOpen(true);
+                        }}
+                        className="p-2 text-zinc-400 hover:text-blue-500 hover:bg-blue-50 rounded-full transition-colors"
+                        title="Editar lista"
+                    >
+                        <Pencil size={18} />
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsDeleteModalOpen(true);
+                        }}
+                        className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                        title="Excluir lista"
+                    >
+                        <Trash2 size={18} />
+                    </button>
+                    <ChevronDown
+                        className={cn("text-zinc-400 transition-transform", isOpen && "rotate-180")}
+                        size={20}
+                    />
+                </div>
+            </div>
 
             <div className={cn(
                 "transition-[max-height] duration-300 ease-in-out overflow-hidden bg-zinc-50/50",
@@ -103,6 +137,28 @@ export function ChecklistGroup({ category }: ChecklistGroupProps) {
                     )}
                 </div>
             </div>
+
+            {/* Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={confirmDeleteCategory}
+                title="Excluir Lista"
+                message={`Tem certeza que deseja excluir a lista "${category.title}"? Todos os itens dentro dela serão perdidos.`}
+                confirmText="Sim, excluir"
+                cancelText="Cancelar"
+                isDangerous={true}
+            />
+
+            {/* Edit Modal */}
+            <EditModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                onSave={handleEditCategory}
+                initialValue={category.title}
+                title="Editar Lista"
+                label="Nome da Lista"
+            />
         </div>
     );
 }

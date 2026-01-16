@@ -7,3 +7,21 @@
     @apply bg-gray-50 text-gray-900 antialiased;
   }
 }
+
+@media print {
+
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Reset potentially scrollable containers */
+  main,
+  #root,
+  .overflow-auto,
+  .overflow-y-auto {
+    height: auto !important;
+    overflow: visible !important;
+  }
+}

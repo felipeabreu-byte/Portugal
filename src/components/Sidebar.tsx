@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideLayoutDashboard, LucidePlusCircle, LucideLogOut, LucideSettings, LucideChevronLeft, LucideChevronRight } from "lucide-react";
+import { LucideLayoutDashboard, LucidePlusCircle, LucideLogOut, LucideSettings, LucideChevronLeft, LucideChevronRight, LucidePrinter } from "lucide-react";
 import { signOut } from "next-auth/react";
 import clsx from "clsx";
 import { useSidebar } from "@/contexts/SidebarContext";
@@ -13,6 +13,7 @@ export function Sidebar() {
 
     const links = [
         { name: "Dashboard", href: "/dashboard", icon: LucideLayoutDashboard },
+        { name: "Impressão", href: "/dashboard/print", icon: LucidePrinter },
         { name: "Nova Compra", href: "/purchases/new", icon: LucidePlusCircle },
         { name: "Configurações", href: "/settings", icon: LucideSettings },
     ];
@@ -20,7 +21,7 @@ export function Sidebar() {
     return (
         <div
             className={clsx(
-                "flex flex-col bg-white border-r h-full fixed md:relative hidden md:flex transition-all duration-500 ease-in-out shadow-xl z-10",
+                "flex flex-col bg-white border-r h-full fixed md:relative hidden md:flex transition-all duration-500 ease-in-out shadow-xl z-10 print:hidden",
                 isCollapsed ? "w-20" : "w-72"
             )}
         >

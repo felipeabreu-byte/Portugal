@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideLayoutDashboard, LucidePlusCircle, LucideSettings, LucideLogOut, LucideMenu, LucideX } from "lucide-react";
+import { LucideLayoutDashboard, LucidePlusCircle, LucideSettings, LucideLogOut, LucideMenu, LucideX, LucidePrinter } from "lucide-react";
 import { signOut } from "next-auth/react";
 import clsx from "clsx";
 
@@ -13,13 +13,14 @@ export function MobileMenu() {
 
     const links = [
         { name: "Dashboard", href: "/dashboard", icon: LucideLayoutDashboard },
+        { name: "Impressão", href: "/dashboard/print", icon: LucidePrinter },
         { name: "Nova Compra", href: "/purchases/new", icon: LucidePlusCircle },
         { name: "Configurações", href: "/settings", icon: LucideSettings },
     ];
 
     return (
         <>
-            <div className="md:hidden fixed top-0 w-full bg-white/80 backdrop-blur-md border-b z-50 px-4 h-16 flex items-center justify-between shadow-sm">
+            <div className="md:hidden fixed top-0 w-full bg-white/80 backdrop-blur-md border-b z-50 px-4 h-16 flex items-center justify-between shadow-sm print:hidden">
                 <h1 className="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600 tracking-tight">
                     Plano Portugal
                 </h1>
