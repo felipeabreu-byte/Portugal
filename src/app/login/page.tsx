@@ -56,7 +56,7 @@ export default function LoginPage() {
     return (
         <div className="flex min-h-screen bg-white">
             {/* Left Column - Form */}
-            <div className="flex flex-col justify-center w-full lg:w-1/2 px-4 py-12 sm:px-6 lg:px-8 xl:px-12 bg-gray-50 lg:bg-white z-10">
+            <div className="flex flex-col justify-center w-full lg:w-[35%] px-4 py-12 sm:px-6 lg:px-8 xl:px-12 bg-gray-50 lg:bg-white z-10">
                 <div className="w-full max-w-sm mx-auto space-y-8">
                     <div className="text-center lg:text-left">
                         <div className="mx-auto lg:mx-0 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg mb-6 transform rotate-3">
@@ -130,12 +130,12 @@ export default function LoginPage() {
             </div>
 
             {/* Right Column - Image */}
-            <div className="hidden lg:block lg:w-1/2 relative overflow-hidden">
+            <div className="hidden lg:block lg:w-[65%] relative overflow-hidden">
                 <div className="absolute inset-0 bg-blue-900/20 mix-blend-multiply z-10" />
                 <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] hover:scale-105"
                     style={{
-                        backgroundImage: "url('https://images.unsplash.com/photo-1555881400-74d7acaacd81?q=80&w=2070&auto=format&fit=crop')",
+                        backgroundImage: "url('/login-bg.jpg')",
                     }}
                 />
                 <div className="absolute bottom-0 left-0 right-0 p-12 text-white z-20 bg-gradient-to-t from-black/80 to-transparent">
