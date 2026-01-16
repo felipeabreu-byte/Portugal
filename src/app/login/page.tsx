@@ -139,8 +139,8 @@ export default function LoginPage() {
                     }}
                 />
                 <div className="absolute bottom-0 left-0 right-0 p-12 text-white z-20 bg-gradient-to-t from-black/80 to-transparent">
-                    <h3 className="text-3xl font-bold mb-2">Lisboa, Portugal</h3>
-                    <p className="text-lg text-blue-100">Prepare-se para viver o seu sonho europeu.</p>
+                    <h3 className="text-3xl font-bold mb-2">Porto, Portugal</h3>
+                    <p className="text-lg text-blue-100">Contagem regressiva para a nossa viagem!</p>
                 </div>
             </div>
         </div>
