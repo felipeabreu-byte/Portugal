@@ -23,8 +23,17 @@ model User {
   updatedAt    DateTime   @updatedAt @map("updated_at")
   purchases    Purchase[]
   checklistItems ChecklistItem[]
+  
+  travelDate   DateTime?  @map("travel_date")
+  city         String?    // Lisboa, Porto, etc
+  profile      UserProfile? @default(TOURIST)
 
   @@map("users")
+}
+
+enum UserProfile {
+  TOURIST
+  RESIDENT
 }
 
 enum PurchaseType {

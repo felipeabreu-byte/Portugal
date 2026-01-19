@@ -1,4 +1,4 @@
-import { ChecklistItem } from "@prisma/client";
+import { ChecklistItem, UserProfile } from "@prisma/client";
 
 export interface Suggestion {
     id: string;
@@ -6,36 +6,103 @@ export interface Suggestion {
     description: string;
     type: 'WARNING' | 'INFO' | 'ACTION';
     actionLabel?: string;
-    actionLink?: string; // Could be a link or an identifier for a modal
+    actionLink?: string;
 }
 
-// Mock context for now. In a real app, this would come from User profile or Trip settings.
-const MOCK_CONTEXT = {
-    destination: 'Portugal',
-    travelDate: new Date('2026-06-15'), // Future date
-    climate: 'cold', // derived from date/destination
-};
+export interface UserContext {
+    travelDate: Date | null;
+    city: string | null;
+    profile: UserProfile | null;
+}
 
-export function generateSuggestions(items: ChecklistItem[], progress: number): Suggestion[] {
+export function generateSuggestions(items: ChecklistItem[], progress: number, context?: UserContext): Suggestion[] {
     const suggestions: Suggestion[] = [];
     const today = new Date();
 
-    // Rule 1: Passport/Documents
-    // Find "Documentos" category items if possible, or just search by string content which is fragile but works for simple MVPs.
-    // Better: We look for specific keywords in pending items.
-    const pendingItems = items.filter(i => i.status !== 'COMPLETED' && i.status !== 'NOT_APPLICABLE');
+    // --- Dynamic Contextual Notification (Priority 1) ---
+    // Rules:
+    // 1. days <= 7
+    // 2. days <= 30
+    // 3. Season = Winter
+    // 4. Profile = Resident
+    // 5. Fallback
 
+    if (context?.travelDate) {
+        const diffTime = context.travelDate.getTime() - today.getTime();
+        const daysToTravel = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const travelMonth = context.travelDate.getMonth(); // 0-11 for Date objects
+
+        // Season Logic for Portugal (Northern Hemisphere)
+        // Dec(11), Jan(0), Feb(1) -> Winter
+        // Mar(2), Apr(3), May(4) -> Spring
+        // Jun(5), Jul(6), Aug(7) -> Summer
+        // Sep(8), Oct(9), Nov(10) -> Autumn
+        let isWinter = false;
+        if (travelMonth === 11 || travelMonth === 0 || travelMonth === 1) isWinter = true;
+
+        if (daysToTravel <= 7 && daysToTravel >= -1) { // -1 to handle "today/yesterday" slightly gracefully
+            suggestions.push({
+                id: 'ctx-week',
+                title: 'Sua viagem é nesta semana!',
+                description: 'Revise documentos, bagagem e transporte.',
+                type: 'WARNING',
+                actionLabel: 'Ver Checklist'
+            });
+        } else if (daysToTravel <= 30 && daysToTravel > 7) {
+            suggestions.push({
+                id: 'ctx-month',
+                title: 'Sua viagem está próxima',
+                description: 'Verifique hospedagem e últimos detalhes.',
+                type: 'ACTION'
+            });
+        } else if (isWinter) {
+            suggestions.push({
+                id: 'ctx-winter',
+                title: 'Inverno em Portugal',
+                description: 'O inverno em Portugal pode ser frio. Prepare roupas adequadas.',
+                type: 'INFO'
+            });
+        } else if (context.profile === 'RESIDENT') {
+            suggestions.push({
+                id: 'ctx-resident',
+                title: 'Documentação de Residência',
+                description: 'Organize documentos importantes para residência em Portugal.',
+                type: 'ACTION'
+            });
+        } else {
+            suggestions.push({
+                id: 'ctx-fallback',
+                title: 'Planejamento',
+                description: 'Continue seu planejamento com calma.',
+                type: 'INFO'
+            });
+        }
+    } else {
+        // No date set -> Prompt to set it
+        suggestions.push({
+            id: 'ctx-no-date',
+            title: 'Defina sua Viagem',
+            description: 'Cadastre a data da sua viagem para receber dicas personalizadas.',
+            type: 'ACTION',
+            actionLink: '/dashboard/trip',
+            actionLabel: 'Começar'
+        });
+    }
+
+    // --- Existing Specific Checks (Secondary) ---
+
+    // Rule: Passport
     const hasPassportCheck = items.some(i => i.title.toLowerCase().includes('passaporte'));
     if (!hasPassportCheck) {
         suggestions.push({
             id: 'add-passport',
             title: 'Documentação Essencial',
-            description: 'Não esqueça de verificar a validade do seu passaporte. Adicione à lista de documentos.',
+            description: 'Não esqueça de verificar a validade do seu passaporte.',
             type: 'ACTION'
         });
     }
 
-    // Rule 2: Progress
+    // Rule: Progress
     if (progress < 30 && progress > 0) {
         suggestions.push({
             id: 'boost-progress',
@@ -45,37 +112,15 @@ export function generateSuggestions(items: ChecklistItem[], progress: number): S
         });
     }
 
-    // Rule 3: Climate (Mock)
-    if (MOCK_CONTEXT.climate === 'cold') {
-        const hasCoat = items.some(i => i.title.toLowerCase().includes('casaco') || i.title.toLowerCase().includes('frio'));
-        if (!hasCoat) {
-            suggestions.push({
-                id: 'weather-cold',
-                title: 'Prepare-se para o Frio',
-                description: 'A previsão indica temperaturas baixas. Lembre-se de levar casacos pesados.',
-                type: 'WARNING'
-            });
-        }
-    }
-
-    // Rule 4: Critical Items
+    // Rule: Critical Items
+    const pendingItems = items.filter(i => i.status !== 'COMPLETED' && i.status !== 'NOT_APPLICABLE');
     const criticalPending = pendingItems.filter(i => i.priority === 'CRITICAL');
     if (criticalPending.length > 0) {
         suggestions.push({
             id: 'critical-items',
             title: 'Itens Críticos Pendentes',
-            description: `Você tem ${criticalPending.length} itens críticos não resolvidos. Dê prioridade a eles!`,
+            description: `Você tem ${criticalPending.length} itens críticos não resolvidos.`,
             type: 'WARNING'
-        });
-    }
-
-    // Fallback / Generic
-    if (suggestions.length === 0 && progress < 100) {
-        suggestions.push({
-            id: 'generic-review',
-            title: 'Revisão Semanal',
-            description: 'Tire um momento para revisar seus gastos e documentos.',
-            type: 'INFO'
         });
     }
 

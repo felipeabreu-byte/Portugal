@@ -9,8 +9,8 @@ import { getChecklistCategories } from "@/actions/checklist";
 import { ChecklistList } from "@/components/Checklist/ChecklistList";
 import { GlobalChecklistProgress } from "@/components/Checklist/GlobalChecklistProgress";
 import { generateSuggestions } from "@/lib/suggestions";
-import { SmartSuggestions } from "@/components/Dashboard/SmartSuggestions";
-import { NotificationManager } from "@/components/UI/NotificationManager";
+import { NotificationCenter } from "@/components/NotificationCenter";
+import { TravelInfoCard } from "@/components/Dashboard/TravelInfoCard";
 import { LogoutButton } from "@/components/LogoutButton";
 
 export const dynamic = "force-dynamic";
@@ -67,7 +67,11 @@ export default async function DashboardPage() {
     const completedItems = allChecklistItems.filter((i: any) => i.status === 'COMPLETED').length;
     const checklistProgress = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
 
-    const suggestions = generateSuggestions(allChecklistItems, checklistProgress);
+    const suggestions = generateSuggestions(allChecklistItems, checklistProgress, {
+        travelDate: user.travelDate,
+        city: user.city,
+        profile: user.profile
+    });
 
     // Live Rate is now fetched client-side to avoid Vercel IP blocks
 
@@ -75,12 +79,14 @@ export default async function DashboardPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h2>
+                <NotificationCenter suggestions={suggestions} />
             </div>
 
-            <NotificationManager suggestions={suggestions} />
-
-            {/* Suggestions */}
-            <SmartSuggestions suggestions={suggestions} />
+            <TravelInfoCard
+                travelDate={user.travelDate}
+                city={user.city}
+                profile={user.profile}
+            />
 
             {/* Travel Progress */}
             <GlobalChecklistProgress categories={checklistCategories} />

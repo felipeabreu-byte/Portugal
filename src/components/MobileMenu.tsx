@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideLayoutDashboard, LucidePlusCircle, LucideSettings, LucideLogOut, LucideMenu, LucideX, LucidePrinter } from "lucide-react";
+import { LucideLayoutDashboard, LucidePlusCircle, LucideSettings, LucideLogOut, LucideMenu, LucideX, LucidePrinter, LucidePlane } from "lucide-react";
 import { signOut } from "next-auth/react";
 import clsx from "clsx";
 
@@ -14,8 +14,9 @@ export function MobileMenu() {
     const links = [
         { name: "Dashboard", href: "/dashboard", icon: LucideLayoutDashboard },
         { name: "Impressão", href: "/dashboard/print", icon: LucidePrinter },
-        { name: "Nova Compra", href: "/purchases/new", icon: LucidePlusCircle },
-        { name: "Configurações", href: "/settings", icon: LucideSettings },
+        { name: "Minha Viagem", href: "/dashboard/trip", icon: LucidePlane },
+        { name: "Nova Compra", href: "/dashboard/purchases/new", icon: LucidePlusCircle },
+        { name: "Configurações", href: "/dashboard/settings", icon: LucideSettings },
     ];
 
     return (
@@ -55,7 +56,7 @@ export function MobileMenu() {
                         )
                     })}
                     <button
-                        onClick={() => signOut({ callbackUrl: "/login" })}
+                        onClick={() => signOut({ callbackUrl: "/" })}
                         className="flex w-full items-center gap-3 px-4 py-4 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100 mt-4 active:scale-95"
                     >
                         <LucideLogOut className="w-5 h-5" />

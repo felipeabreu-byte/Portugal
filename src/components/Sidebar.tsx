@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideLayoutDashboard, LucidePlusCircle, LucideLogOut, LucideSettings, LucideChevronLeft, LucideChevronRight, LucidePrinter } from "lucide-react";
+import { LucideLayoutDashboard, LucidePlusCircle, LucideLogOut, LucideSettings, LucideChevronLeft, LucideChevronRight, LucidePrinter, LucidePlane } from "lucide-react";
 import { signOut } from "next-auth/react";
 import clsx from "clsx";
 import { useSidebar } from "@/contexts/SidebarContext";
@@ -14,8 +14,9 @@ export function Sidebar() {
     const links = [
         { name: "Dashboard", href: "/dashboard", icon: LucideLayoutDashboard },
         { name: "Impressão", href: "/dashboard/print", icon: LucidePrinter },
-        { name: "Nova Compra", href: "/purchases/new", icon: LucidePlusCircle },
-        { name: "Configurações", href: "/settings", icon: LucideSettings },
+        { name: "Minha Viagem", href: "/dashboard/trip", icon: LucidePlane },
+        { name: "Nova Compra", href: "/dashboard/purchases/new", icon: LucidePlusCircle },
+        { name: "Configurações", href: "/dashboard/settings", icon: LucideSettings },
     ];
 
     return (
@@ -81,7 +82,7 @@ export function Sidebar() {
             </nav>
             <div className="p-4 border-t border-gray-100">
                 <button
-                    onClick={() => signOut({ callbackUrl: "/login" })}
+                    onClick={() => signOut({ callbackUrl: "/" })}
                     className={clsx(
                         "flex w-full items-center gap-3 px-4 py-3.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl transition-all duration-300 overflow-hidden whitespace-nowrap group",
                         isCollapsed && "justify-center px-0"

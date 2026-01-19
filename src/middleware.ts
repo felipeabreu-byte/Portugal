@@ -11,6 +11,5 @@ export const config = {
         "/dashboard/:path*",
         "/settings/:path*",
         "/purchases/:path*",
-        "/((?!login|register|api|_next/static|_next/image|favicon.ico).*)",
     ]
 };
