@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { updateTravelDetails } from '@/actions/user';
-import { Loader2, Save, LucidePlane, LucideMapPin, LucideUser } from 'lucide-react';
+import { searchPlaces } from '@/lib/places'; // Import search function
+import { Loader2, Save, LucidePlane, LucideMapPin, LucideUser, Check } from 'lucide-react';
 import { UserProfile } from '@prisma/client';
+import { useEffect, useRef } from 'react';
 
 interface TravelFormProps {
     initialData: {
@@ -21,6 +23,42 @@ export function TravelForm({ initialData }: TravelFormProps) {
     // Default to TOURIST if null
     const [profile, setProfile] = useState<UserProfile>(initialData.profile || 'TOURIST');
     const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+    // Autocomplete State
+    const [suggestions, setSuggestions] = useState<string[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+                setShowSuggestions(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [wrapperRef]);
+
+    const handleCityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setCity(val);
+        if (val.length > 0) {
+            const results = searchPlaces(val);
+            setSuggestions(results);
+            setShowSuggestions(true);
+        } else {
+            setSuggestions([]);
+            setShowSuggestions(false);
+        }
+    };
+
+    const selectSuggestion = (val: string) => {
+        setCity(val);
+        setSuggestions([]);
+        setShowSuggestions(false);
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -70,7 +108,7 @@ export function TravelForm({ initialData }: TravelFormProps) {
                         />
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-2 relative" ref={wrapperRef}>
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                             <LucideMapPin size={16} className="text-blue-500" />
                             Cidade de Destino
@@ -78,10 +116,26 @@ export function TravelForm({ initialData }: TravelFormProps) {
                         <input
                             type="text"
                             value={city}
-                            onChange={(e) => setCity(e.target.value)}
+                            onChange={handleCityChange}
+                            onFocus={() => { if (city) setShowSuggestions(true); }}
                             placeholder="Ex: Lisboa, Porto..."
                             className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                            autoComplete="off"
                         />
+                        {showSuggestions && suggestions.length > 0 && (
+                            <ul className="absolute z-50 w-full bg-white border border-gray-100 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
+                                {suggestions.map((s, i) => (
+                                    <li
+                                        key={i}
+                                        onClick={() => selectSuggestion(s)}
+                                        className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm text-gray-700 flex items-center justify-between group"
+                                    >
+                                        {s}
+                                        {city === s && <Check size={14} className="text-blue-600" />}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
 
                     <div className="space-y-2">

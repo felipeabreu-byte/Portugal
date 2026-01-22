@@ -27,8 +27,25 @@ model User {
   travelDate   DateTime?  @map("travel_date")
   city         String?    // Lisboa, Porto, etc
   profile      UserProfile? @default(TOURIST)
+  
+  postArrivalExpenses PostArrivalExpense[]
 
   @@map("users")
+}
+
+model PostArrivalExpense {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  description   String
+  amountEur     Decimal  @map("amount_eur")
+  startMonth    Int      @map("start_month") @default(1)
+  durationMonths Int      @map("duration_months") @default(1)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("post_arrival_expenses")
 }
 
 enum UserProfile {

@@ -16,9 +16,10 @@ interface CategoryWithItems extends ChecklistCategory {
 
 interface ChecklistListProps {
     categories: CategoryWithItems[];
+    readOnly?: boolean;
 }
 
-export function ChecklistList({ categories }: ChecklistListProps) {
+export function ChecklistList({ categories, readOnly = false }: ChecklistListProps) {
     const { isCollapsed } = useSidebar();
     const [items, setItems] = useState(categories);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +29,7 @@ export function ChecklistList({ categories }: ChecklistListProps) {
     }, [categories]);
 
     const onDragEnd = async (result: DropResult) => {
-        if (!result.destination) return;
+        if (!result.destination || readOnly) return; // Disable drag if readOnly
 
         const sourceIndex = result.source.index;
         const destinationIndex = result.destination.index;
@@ -62,17 +63,19 @@ export function ChecklistList({ categories }: ChecklistListProps) {
         <div className="space-y-6">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-zinc-800">Checklist de Viagem</h2>
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all text-sm"
-                >
-                    <Plus size={16} />
-                    Adicionar Lista
-                </button>
+                {!readOnly && (
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all text-sm"
+                    >
+                        <Plus size={16} />
+                        Adicionar Lista
+                    </button>
+                )}
             </div>
 
             <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="checklist-list" direction="vertical">
+                <Droppable droppableId="checklist-list" direction="vertical" isDropDisabled={readOnly}>
                     {(provided) => (
                         <div
                             ref={provided.innerRef}
@@ -84,7 +87,7 @@ export function ChecklistList({ categories }: ChecklistListProps) {
                             )}
                         >
                             {items.map((category, index) => (
-                                <Draggable key={category.id} draggableId={category.id} index={index}>
+                                <Draggable key={category.id} draggableId={category.id} index={index} isDragDisabled={readOnly}>
                                     {(provided, snapshot) => (
                                         <div
                                             ref={provided.innerRef}
@@ -96,7 +99,7 @@ export function ChecklistList({ categories }: ChecklistListProps) {
                                             )}
                                             style={provided.draggableProps.style}
                                         >
-                                            <ChecklistGroup category={category} />
+                                            <ChecklistGroup category={category} readOnly={readOnly} />
                                         </div>
                                     )}
                                 </Draggable>
@@ -114,3 +117,5 @@ export function ChecklistList({ categories }: ChecklistListProps) {
         </div>
     );
 }
+
+

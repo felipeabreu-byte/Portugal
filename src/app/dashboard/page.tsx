@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { LucideEuro, LucideTrendingUp, LucideTarget, LucideWallet } from "lucide-react";
+import { LucideEuro, LucideTrendingUp, LucideTarget, LucideWallet, LucideCalculator } from "lucide-react";
 import { redirect } from "next/navigation";
 import { SummaryCard } from "@/components/SummaryCard";
 import { LiveEuroAdvice } from "@/components/LiveEuroAdvice";
@@ -30,7 +30,8 @@ export default async function DashboardPage() {
         include: {
             purchases: {
                 orderBy: { date: 'desc' },
-            }
+            },
+            postArrivalExpenses: true
         }
     });
 
@@ -50,10 +51,13 @@ export default async function DashboardPage() {
     const checklistCategories = await getChecklistCategories();
 
     const purchases = user.purchases;
+    const postArrivalExpenses = user.postArrivalExpenses || [];
 
     const totalEur = purchases.reduce((acc: number, p: any) => acc + Number(p.amountEur), 0);
     const totalBrl = purchases.reduce((acc: number, p: any) => acc + Number(p.totalBrl), 0);
     const avgRate = totalEur > 0 ? totalBrl / totalEur : 0;
+
+    const totalPlanned = postArrivalExpenses.reduce((acc: number, curr: any) => acc + (Number(curr.amountEur) * curr.durationMonths), 0);
 
     const targetAmount = Number(user.targetAmount);
     const remaining = Math.max(0, targetAmount - totalEur);
@@ -104,10 +108,10 @@ export default async function DashboardPage() {
                     subtitle={`Investido: R$ ${totalBrl.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
                 />
                 <SummaryCard
-                    title="Câmbio Médio"
-                    icon={LucideTrendingUp}
-                    value={`R$ ${avgRate.toLocaleString('pt-BR', { minimumFractionDigits: 3 })}`}
-                    subtitle="Por Euro comprado"
+                    title="Planejamento Pós-Chegada"
+                    icon={LucideCalculator} // Using Calculator Icon
+                    value={`€ ${totalPlanned.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+                    subtitle="Estimado para o início"
                 />
                 <SummaryCard
                     title="Meta"
@@ -127,7 +131,7 @@ export default async function DashboardPage() {
             <div className="grid grid-cols-1 gap-6">
                 {/* Checklist Column */}
                 <div className="w-full">
-                    <ChecklistList categories={checklistCategories} />
+                    {totalItems > 0 && <ChecklistList categories={checklistCategories} readOnly={true} />}
                 </div>
             </div>
         </div>

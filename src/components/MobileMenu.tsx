@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideLayoutDashboard, LucidePlusCircle, LucideSettings, LucideLogOut, LucideMenu, LucideX, LucidePrinter, LucidePlane } from "lucide-react";
+import { LucideLayoutDashboard, LucidePlusCircle, LucideSettings, LucideLogOut, LucideMenu, LucideX, LucidePrinter, LucidePlane, LucideCalculator, LucideCheckSquare } from "lucide-react";
 import { signOut } from "next-auth/react";
 import clsx from "clsx";
 
@@ -14,8 +14,10 @@ export function MobileMenu() {
     const links = [
         { name: "Dashboard", href: "/dashboard", icon: LucideLayoutDashboard },
         { name: "Impressão", href: "/dashboard/print", icon: LucidePrinter },
+        { name: "Checklist", href: "/dashboard/checklist", icon: LucideCheckSquare },
         { name: "Minha Viagem", href: "/dashboard/trip", icon: LucidePlane },
         { name: "Nova Compra", href: "/dashboard/purchases/new", icon: LucidePlusCircle },
+        { name: "Planejamento", href: "/dashboard/planning", icon: LucideCalculator },
         { name: "Configurações", href: "/dashboard/settings", icon: LucideSettings },
     ];
 

@@ -10,9 +10,10 @@ import { EditModal } from '@/components/UI/EditModal';
 
 interface ChecklistItemProps {
     item: PrismaChecklistItem;
+    readOnly?: boolean;
 }
 
-export function ChecklistItem({ item }: ChecklistItemProps) {
+export function ChecklistItem({ item, readOnly = false }: ChecklistItemProps) {
     const [loading, setLoading] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -83,23 +84,25 @@ export function ChecklistItem({ item }: ChecklistItemProps) {
                     )}
 
                     {/* Actions */}
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                        <button className="p-1 hover:bg-zinc-100 rounded text-zinc-400 hover:text-zinc-600">
-                            <Paperclip size={14} />
-                        </button>
-                        <button
-                            onClick={() => setIsEditModalOpen(true)}
-                            className="p-1 hover:bg-blue-50 rounded text-zinc-400 hover:text-blue-500"
-                        >
-                            <Pencil size={14} />
-                        </button>
-                        <button
-                            onClick={() => setIsDeleteModalOpen(true)}
-                            className="p-1 hover:bg-red-50 rounded text-zinc-400 hover:text-red-500"
-                        >
-                            <Trash2 size={14} />
-                        </button>
-                    </div>
+                    {!readOnly && (
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                            <button className="p-1 hover:bg-zinc-100 rounded text-zinc-400 hover:text-zinc-600">
+                                <Paperclip size={14} />
+                            </button>
+                            <button
+                                onClick={() => setIsEditModalOpen(true)}
+                                className="p-1 hover:bg-blue-50 rounded text-zinc-400 hover:text-blue-500"
+                            >
+                                <Pencil size={14} />
+                            </button>
+                            <button
+                                onClick={() => setIsDeleteModalOpen(true)}
+                                className="p-1 hover:bg-red-50 rounded text-zinc-400 hover:text-red-500"
+                            >
+                                <Trash2 size={14} />
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
