@@ -57,6 +57,62 @@ export async function deleteExpense(id: string) {
     if (!session?.user?.email) throw new Error("Unauthorized");
 
     await prisma.postArrivalExpense.delete({ where: { id } });
+    await prisma.postArrivalExpense.delete({ where: { id } });
+    revalidatePath("/dashboard/planning");
+}
+
+export async function getIncomes() {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) throw new Error("Unauthorized");
+
+    const user = await prisma.user.findUnique({
+        where: { email: session.user.email },
+        include: { postArrivalIncomes: { orderBy: { createdAt: 'asc' } } }
+    });
+
+    return user?.postArrivalIncomes || [];
+}
+
+export async function createIncome(data: { description: string; amountEur: number; startMonth: number; durationMonths: number }) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) throw new Error("Unauthorized");
+
+    const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+    if (!user) throw new Error("User not found");
+
+    await prisma.postArrivalIncome.create({
+        data: {
+            userId: user.id,
+            description: data.description,
+            amountEur: data.amountEur,
+            startMonth: data.startMonth,
+            durationMonths: data.durationMonths,
+        }
+    });
+    revalidatePath("/dashboard/planning");
+}
+
+export async function updateIncome(id: string, data: { description: string; amountEur: number; startMonth: number; durationMonths: number }) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) throw new Error("Unauthorized");
+
+    await prisma.postArrivalIncome.update({
+        where: { id },
+        data: {
+            description: data.description,
+            amountEur: data.amountEur,
+            startMonth: data.startMonth,
+            durationMonths: data.durationMonths,
+        }
+    });
+    revalidatePath("/dashboard/planning");
+}
+
+export async function deleteIncome(id: string) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) throw new Error("Unauthorized");
+
+    await prisma.postArrivalIncome.delete({ where: { id } });
     revalidatePath("/dashboard/planning");
 }
 

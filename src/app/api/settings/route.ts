@@ -11,10 +11,20 @@ export async function GET(req: Request) {
 
     const user = await prisma.user.findUnique({
         where: { email: session.user.email },
-        select: { targetAmount: true }
+        select: {
+            targetAmount: true,
+            name: true,
+            age: true,
+            phone: true
+        }
     });
 
-    return NextResponse.json({ targetAmount: user?.targetAmount || 0 });
+    return NextResponse.json({
+        targetAmount: user?.targetAmount || 0,
+        name: user?.name || "",
+        age: user?.age || "", // Send as string for easier form handling if needed, or number
+        phone: user?.phone || ""
+    });
 }
 
 export async function POST(req: Request) {
@@ -22,11 +32,16 @@ export async function POST(req: Request) {
     if (!session?.user?.email) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
     const body = await req.json();
-    const { targetAmount } = body;
+    const { targetAmount, name, age, phone } = body;
 
     await prisma.user.update({
         where: { email: session.user.email },
-        data: { targetAmount: Number(targetAmount) }
+        data: {
+            targetAmount: Number(targetAmount),
+            name: name,
+            age: age ? Number(age) : null,
+            phone: phone
+        }
     });
 
     return NextResponse.json({ message: "Update" });

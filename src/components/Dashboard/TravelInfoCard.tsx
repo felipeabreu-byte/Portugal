@@ -15,9 +15,9 @@ export function TravelInfoCard({ travelDate, city, profile }: TravelInfoCardProp
 
     if (!hasData) {
         return (
-            <div className="bg-white rounded-xl border border-dashed border-gray-300 p-4 flex items-center justify-between shadow-sm mb-6">
+            <div className="bg-white rounded-xl border border-gray-200 border-dashed p-4 flex items-center justify-between shadow-sm mb-6">
                 <div className="flex items-center gap-3">
-                    <div className="bg-gray-100 p-2 rounded-full text-gray-500">
+                    <div className="bg-blue-50 p-2 rounded-full text-blue-500">
                         <LucidePlane size={20} />
                     </div>
                     <div>
@@ -80,46 +80,48 @@ export function TravelInfoCard({ travelDate, city, profile }: TravelInfoCardProp
     }
 
     return (
-        <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm mb-6 relative overflow-hidden group">
+        <div className="bg-white/60 backdrop-blur-md rounded-xl border border-white/60 p-5 shadow-sm mb-6 relative overflow-hidden group">
             {/* Background decoration */}
-            <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity">
-                <LucidePlane size={120} />
+            <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity pointer-events-none">
+                <div className="text-blue-600">
+                    <LucidePlane size={120} />
+                </div>
             </div>
 
             <div className="flex flex-col gap-6 relative z-10">
                 {/* Header Row: Main Trip Info */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200/50 pb-4">
                     <div className="flex items-center gap-4">
-                        <div className="bg-blue-50 p-2.5 rounded-full text-blue-600 hidden sm:block">
+                        <div className="bg-white/50 p-2.5 rounded-full text-blue-600 hidden sm:block shadow-sm">
                             <LucidePlane size={20} />
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-2 sm:gap-6">
                             <div className="flex items-center gap-2">
-                                <LucideCalendar size={14} className="text-gray-400" />
+                                <LucideCalendar size={14} className="text-gray-500" />
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Data</span>
-                                    <span className="text-sm font-semibold text-gray-800">{formattedDate}</span>
+                                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Data</span>
+                                    <span className="text-sm font-semibold text-gray-900">{formattedDate}</span>
                                 </div>
                             </div>
 
-                            <div className="h-8 w-px bg-gray-100 hidden sm:block"></div>
+                            <div className="h-8 w-px bg-gray-200/50 hidden sm:block"></div>
 
                             <div className="flex items-center gap-2">
-                                <LucideMapPin size={14} className="text-gray-400" />
+                                <LucideMapPin size={14} className="text-gray-500" />
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Destino</span>
-                                    <span className="text-sm font-semibold text-gray-800">{city || 'Não definido'}</span>
+                                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Destino</span>
+                                    <span className="text-sm font-semibold text-gray-900">{city || 'Não definido'}</span>
                                 </div>
                             </div>
 
-                            <div className="h-8 w-px bg-gray-100 hidden sm:block"></div>
+                            <div className="h-8 w-px bg-gray-200/50 hidden sm:block"></div>
 
                             <div className="flex items-center gap-2">
-                                <LucideUser size={14} className="text-gray-400" />
+                                <LucideUser size={14} className="text-gray-500" />
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Perfil</span>
-                                    <span className="text-sm font-semibold text-gray-800">
+                                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Perfil</span>
+                                    <span className="text-sm font-semibold text-gray-900">
                                         {profile === 'RESIDENT' ? 'Residente' : 'Turista'}
                                     </span>
                                 </div>
@@ -129,7 +131,7 @@ export function TravelInfoCard({ travelDate, city, profile }: TravelInfoCardProp
 
                     <Link
                         href="/dashboard/trip"
-                        className="text-gray-400 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-full transition-all self-end sm:self-center"
+                        className="text-gray-500 hover:text-blue-600 hover:bg-white/50 p-2 rounded-full transition-all self-end sm:self-center"
                         title="Editar informações"
                     >
                         <LucideEdit2 size={16} />
@@ -138,27 +140,27 @@ export function TravelInfoCard({ travelDate, city, profile }: TravelInfoCardProp
 
                 {/* Context Row: Countdown, Season, Tip */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="flex items-start gap-3 bg-gray-50/50 p-3 rounded-lg">
+                    <div className="flex items-start gap-3 bg-white/40 p-3 rounded-lg border border-white/50 shadow-sm">
                         <LucideTimer className="text-blue-500 mt-0.5" size={18} />
                         <div>
                             <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider block mb-0.5">Contagem</span>
-                            <span className="text-sm font-bold text-gray-800">{timeString}</span>
+                            <span className="text-sm font-bold text-gray-900">{timeString}</span>
                         </div>
                     </div>
 
-                    <div className="flex items-start gap-3 bg-gray-50/50 p-3 rounded-lg">
+                    <div className="flex items-start gap-3 bg-white/40 p-3 rounded-lg border border-white/50 shadow-sm">
                         <LucideCloudSun className="text-amber-500 mt-0.5" size={18} />
                         <div>
                             <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider block mb-0.5">Estação em Portugal</span>
-                            <span className="text-sm font-bold text-gray-800">{season}</span>
+                            <span className="text-sm font-bold text-gray-900">{season}</span>
                         </div>
                     </div>
 
-                    <div className="flex items-start gap-3 bg-blue-50/50 p-3 rounded-lg border border-blue-100/50">
-                        <LucideLightbulb className="text-yellow-500 mt-0.5" size={18} />
+                    <div className="flex items-start gap-3 bg-blue-50/50 p-3 rounded-lg border border-blue-100/50 shadow-sm">
+                        <LucideLightbulb className="text-blue-500 mt-0.5" size={18} />
                         <div>
-                            <span className="text-[10px] uppercase font-bold text-blue-800/60 tracking-wider block mb-0.5">Dica da Estação</span>
-                            <span className="text-xs font-medium text-blue-900 leading-relaxed">{tip}</span>
+                            <span className="text-[10px] uppercase font-bold text-blue-600 transform scale-90 origin-left tracking-wider block mb-0.5">Dica da Estação</span>
+                            <span className="text-xs font-medium text-blue-700 leading-relaxed">{tip}</span>
                         </div>
                     </div>
                 </div>

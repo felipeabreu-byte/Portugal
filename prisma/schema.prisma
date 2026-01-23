@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,38 +8,96 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(uuid())
-  email        String     @unique
-  password     String
-  name         String?
-  targetAmount Decimal    @default(0) @map("target_amount") // Meta em EUR
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @updatedAt @map("updated_at")
-  purchases    Purchase[]
-  checklistItems ChecklistItem[]
-  
-  travelDate   DateTime?  @map("travel_date")
-  city         String?    // Lisboa, Porto, etc
-  profile      UserProfile? @default(TOURIST)
-  
+  id                  String               @id @default(uuid())
+  email               String               @unique
+  password            String
+  name                String?
+  age                 Int?
+  phone               String?
+  targetAmount        Decimal              @default(0) @map("target_amount")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  city                String?
+  profile             UserProfile?         @default(TOURIST)
+  travelDate          DateTime?            @map("travel_date")
+  checklistItems      ChecklistItem[]
   postArrivalExpenses PostArrivalExpense[]
+  postArrivalIncomes  PostArrivalIncome[]
+  purchases           Purchase[]
 
   @@map("users")
 }
 
 model PostArrivalExpense {
-  id            String   @id @default(uuid())
-  userId        String   @map("user_id")
-  description   String
-  amountEur     Decimal  @map("amount_eur")
-  startMonth    Int      @map("start_month") @default(1)
-  durationMonths Int      @map("duration_months") @default(1)
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  description    String
+  amountEur      Decimal  @map("amount_eur")
+  startMonth     Int      @default(1) @map("start_month")
+  durationMonths Int      @default(1) @map("duration_months")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("post_arrival_expenses")
+}
+
+model PostArrivalIncome {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  description    String
+  amountEur      Decimal  @map("amount_eur")
+  startMonth     Int      @default(1) @map("start_month")
+  durationMonths Int      @default(1) @map("duration_months")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("post_arrival_incomes")
+}
+
+model Purchase {
+  id           String       @id @default(uuid())
+  userId       String       @map("user_id")
+  amountEur    Decimal      @map("amount_eur")
+  exchangeRate Decimal      @map("exchange_rate")
+  iof          Decimal      @default(1.1)
+  totalBrl     Decimal      @map("total_brl")
+  type         PurchaseType
+  date         DateTime
+  notes        String?
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("purchases")
+}
+
+model ChecklistCategory {
+  id    String          @id @default(uuid())
+  title String
+  order Int             @default(0)
+  items ChecklistItem[]
+
+  @@map("checklist_categories")
+}
+
+model ChecklistItem {
+  id            String            @id @default(uuid())
+  categoryId    String            @map("category_id")
+  userId        String            @map("user_id")
+  title         String
+  description   String?
+  status        ChecklistStatus   @default(PENDING)
+  priority      ChecklistPriority @default(MEDIUM)
+  suggestedDate DateTime?         @map("suggested_date")
+  attachmentUrl String?           @map("attachment_url")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+  category      ChecklistCategory @relation(fields: [categoryId], references: [id])
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("checklist_items")
 }
 
 enum UserProfile {
@@ -56,24 +108,6 @@ enum UserProfile {
 enum PurchaseType {
   CASH
   ACCOUNT
-}
-
-model Purchase {
-  id           String       @id @default(uuid())
-  userId       String       @map("user_id")
-  amountEur    Decimal      @map("amount_eur")
-  exchangeRate Decimal      @map("exchange_rate")
-  iof          Decimal      @default(1.1) // 1.1% for cash, usually higher for card/account
-  totalBrl     Decimal      @map("total_brl")
-  type         PurchaseType
-  date         DateTime
-  notes        String?
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
-  
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("purchases")
 }
 
 enum ChecklistStatus {
@@ -87,32 +121,4 @@ enum ChecklistPriority {
   MEDIUM
   HIGH
   CRITICAL
-}
-
-model ChecklistCategory {
-  id          String          @id @default(uuid())
-  title       String
-  order       Int             @default(0)
-  items       ChecklistItem[]
-
-  @@map("checklist_categories")
-}
-
-model ChecklistItem {
-  id             String            @id @default(uuid())
-  categoryId     String            @map("category_id")
-  userId         String            @map("user_id") // Optional: if we want per-user checklists. Assuming yes for a travel app.
-  title          String
-  description    String?
-  status         ChecklistStatus   @default(PENDING)
-  priority       ChecklistPriority @default(MEDIUM)
-  suggestedDate  DateTime?         @map("suggested_date")
-  attachmentUrl  String?           @map("attachment_url")
-  createdAt      DateTime          @default(now()) @map("created_at")
-  updatedAt      DateTime          @updatedAt @map("updated_at")
-
-  category       ChecklistCategory @relation(fields: [categoryId], references: [id])
-  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("checklist_items")
 }

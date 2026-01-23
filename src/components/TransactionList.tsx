@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LucideTrash2, Loader2 } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 type Purchase = {
     id: string;
@@ -59,7 +60,7 @@ export function TransactionList({ purchases }: { purchases: Purchase[] }) {
                         {purchases.map((p) => (
                             <tr key={p.id} className="border-b transition-colors hover:bg-gray-50/50">
                                 <td className="p-4 align-middle">{new Date(p.date).toLocaleDateString("pt-BR", { timeZone: "UTC" })}</td>
-                                <td className="p-4 align-middle font-medium">€ {Number(p.amountEur).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                                <td className="p-4 align-middle font-medium">{formatCurrency(Number(p.amountEur))}</td>
                                 <td className="p-4 align-middle">R$ {Number(p.exchangeRate).toLocaleString("pt-BR", { minimumFractionDigits: 3 })}</td>
                                 <td className="p-4 align-middle">R$ {Number(p.totalBrl).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
                                 <td className="p-4 align-middle capitalize">{p.type === "CASH" ? "Espécie" : "Conta"}</td>
@@ -91,7 +92,7 @@ export function TransactionList({ purchases }: { purchases: Purchase[] }) {
                                 <p className="text-sm text-gray-500">{new Date(p.date).toLocaleDateString("pt-BR", { timeZone: "UTC" })}</p>
                                 <div className="flex items-baseline gap-2">
                                     <span className="text-lg font-bold text-gray-900">
-                                        € {Number(p.amountEur).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                                        {formatCurrency(Number(p.amountEur))}
                                     </span>
                                     <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium">
                                         {p.type === "CASH" ? "Espécie" : "Conta"}

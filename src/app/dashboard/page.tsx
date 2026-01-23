@@ -12,6 +12,7 @@ import { generateSuggestions } from "@/lib/suggestions";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { TravelInfoCard } from "@/components/Dashboard/TravelInfoCard";
 import { LogoutButton } from "@/components/LogoutButton";
+import { formatCurrency } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -81,8 +82,18 @@ export default async function DashboardPage() {
 
     return (
         <div className="space-y-6">
+            {/* Live Advice Card (Client Side) */}
+            <div className="mb-2">
+                <LiveEuroAdvice />
+            </div>
+
             <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h2>
+                <div>
+                    <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+                        {user.name ? `Bem-vindo, ${user.name.split(' ')[0]}` : 'Dashboard'}
+                    </h2>
+                    {user.name && <p className="text-gray-500">Vamos planejar sua jornada!</p>}
+                </div>
                 <NotificationCenter suggestions={suggestions} />
             </div>
 
@@ -95,29 +106,24 @@ export default async function DashboardPage() {
             {/* Travel Progress */}
             <GlobalChecklistProgress categories={checklistCategories} />
 
-            {/* Live Advice Card (Client Side) */}
-            <div className="mb-6">
-                <LiveEuroAdvice />
-            </div>
-
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <SummaryCard
                     title="Total Acumulado"
                     icon={LucideEuro}
-                    value={`€ ${totalEur.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+                    value={formatCurrency(totalEur)}
                     subtitle={`Investido: R$ ${totalBrl.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
                 />
                 <SummaryCard
                     title="Planejamento Pós-Chegada"
                     icon={LucideCalculator} // Using Calculator Icon
-                    value={`€ ${totalPlanned.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+                    value={formatCurrency(totalPlanned)}
                     subtitle="Estimado para o início"
                 />
                 <SummaryCard
                     title="Meta"
                     icon={LucideTarget}
-                    value={`€ ${targetAmount.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}`}
-                    subtitle={`Faltam € ${remaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+                    value={formatCurrency(targetAmount)}
+                    subtitle={`Faltam ${formatCurrency(remaining)}`}
                 />
                 <SummaryCard
                     title="Progresso Financeiro"

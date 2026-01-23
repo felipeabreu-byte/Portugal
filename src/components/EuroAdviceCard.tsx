@@ -10,53 +10,70 @@ export function EuroAdviceCard({ currentRate }: EuroAdviceProps) {
     const diffPercent = ((currentRate - STANDARD_RATE) / STANDARD_RATE) * 100;
 
     // Logic Classification
-    let status: "VERY_CHEAP" | "GOOD" | "NEUTRAL" | "WARNING" | "EXPENSIVE" = "NEUTRAL";
     let message = "Preço razoável";
-    let colorClass = "bg-gray-50 border-gray-200 text-gray-700";
-    let icon = <LucideInfo className="h-5 w-5" />;
+    // Using softer/lighter text colors for better contrast on lighter backgrounds if needed, 
+    // but with the white text requirement, we keep white text but soften the background.
+    let statusColor = "text-blue-50";
+    let iconColor = "text-white";
+    let bgIconColor = "bg-white/20";
+    let cardBg = "bg-gradient-to-r from-blue-400/90 to-blue-500/90";
+    let icon = <LucideInfo className="h-3.5 w-3.5" />;
 
     if (currentRate < STANDARD_RATE) {
-        status = "GOOD";
-        message = "Dia bom para comprar!";
-        colorClass = "bg-green-50 border-green-200 text-green-700";
-        icon = <LucideTrendingDown className="h-5 w-5" />;
+        message = "Comprar!";
+        statusColor = "text-emerald-50";
+        iconColor = "text-white";
+        bgIconColor = "bg-white/20";
+        // Softer green with transparency
+        cardBg = "bg-gradient-to-r from-emerald-400/90 to-emerald-500/90";
+        icon = <LucideTrendingDown className="h-3.5 w-3.5" />;
     }
 
     if (diffPercent <= -15) {
-        status = "VERY_CHEAP";
-        message = "Muito Barato! Aproveite!";
-        colorClass = "bg-emerald-100 border-emerald-300 text-emerald-800 ring-2 ring-emerald-400 ring-opacity-50 animate-pulse";
-        icon = <LucideTrendingDown className="h-6 w-6" />;
+        message = "Muito Barato!";
+        statusColor = "text-emerald-50";
+        iconColor = "text-white";
+        bgIconColor = "bg-white/20";
+        cardBg = "bg-gradient-to-r from-emerald-400/90 to-emerald-500/90";
+        icon = <LucideTrendingDown className="h-5 w-5" />;
     } else if (diffPercent >= 4 && diffPercent < 15) {
-        status = "WARNING";
-        message = "Preço em alta (Atenção)";
-        colorClass = "bg-yellow-50 border-yellow-200 text-yellow-700";
-        icon = <LucideTrendingUp className="h-5 w-5" />;
+        message = "Preço em alta";
+        statusColor = "text-amber-50";
+        iconColor = "text-white";
+        bgIconColor = "bg-white/20";
+        cardBg = "bg-gradient-to-r from-amber-400/90 to-amber-500/90";
+        icon = <LucideTrendingUp className="h-3.5 w-3.5" />;
     } else if (diffPercent >= 15) {
-        status = "EXPENSIVE";
-        message = "Muito caro! Aguarde.";
-        colorClass = "bg-red-50 border-red-200 text-red-700";
-        icon = <LucideTrendingUp className="h-5 w-5" />;
+        message = "Muito caro";
+        statusColor = "text-red-50";
+        iconColor = "text-white";
+        bgIconColor = "bg-white/20";
+        cardBg = "bg-gradient-to-r from-red-400/90 to-red-500/90";
+        icon = <LucideTrendingUp className="h-3.5 w-3.5" />;
     }
 
     return (
-        <div className={clsx("rounded-xl border p-4 flex flex-row items-center justify-between shadow-sm transition-all h-[100px]", colorClass)}>
+        <div className={clsx("rounded-lg px-4 py-2 flex flex-row items-center justify-between shadow-sm transition-all h-[56px] border border-white/10 backdrop-blur-sm", cardBg)}>
             <div>
-                <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium opacity-80 uppercase tracking-wider">Euro Turismo</span>
-                    {icon}
+                <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-[9px] font-bold text-white/90 uppercase tracking-wider">Euro Turismo</span>
+                    <div className={clsx("p-0.5 rounded-md backdrop-blur-sm", bgIconColor, iconColor)}>
+                        {icon}
+                    </div>
                 </div>
-                <div className="text-2xl font-bold leading-none">
-                    R$ {currentRate.toLocaleString('pt-BR', { minimumFractionDigits: 3 })}
+                <div className="flex items-baseline gap-2">
+                    <div className="text-lg font-bold leading-none text-white">
+                        R$ {currentRate.toLocaleString('pt-BR', { minimumFractionDigits: 3 })}
+                    </div>
+                    <p className={clsx("font-medium text-[10px]", statusColor)}>{message}</p>
                 </div>
-                <p className="font-semibold text-sm mt-1 text-gray-800">{message}</p>
             </div>
 
             <div className="text-right flex flex-col justify-end h-full">
-                <p className="text-[10px] opacity-70">
+                <p className="text-[9px] text-white/70">
                     Ref: R$ {STANDARD_RATE.toFixed(2)}
                 </p>
-                <p className={clsx("text-[10px] font-medium", diffPercent > 0 ? "text-red-500" : "text-green-500")}>
+                <p className={clsx("text-[9px] font-medium", diffPercent > 0 ? "text-red-100" : "text-emerald-100")}>
                     {diffPercent > 0 ? '+' : ''}{diffPercent.toFixed(1)}%
                 </p>
             </div>
