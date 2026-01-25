@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LucideTrash2, Loader2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 type Purchase = {
     id: string;
@@ -17,6 +18,7 @@ type Purchase = {
 export function TransactionList({ purchases }: { purchases: Purchase[] }) {
     const router = useRouter();
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const { currency } = useCurrency();
 
     const handleDelete = async (id: string) => {
         if (!confirm("Tem certeza que deseja excluir esta compra?")) return;
@@ -49,9 +51,9 @@ export function TransactionList({ purchases }: { purchases: Purchase[] }) {
                     <thead className="[&_tr]:border-b">
                         <tr className="border-b transition-colors hover:bg-gray-50/50">
                             <th className="h-12 px-4 align-middle font-medium text-gray-500">Data</th>
-                            <th className="h-12 px-4 align-middle font-medium text-gray-500">Valor (EUR)</th>
+                            <th className="h-12 px-4 align-middle font-medium text-gray-500">Valor (€)</th>
                             <th className="h-12 px-4 align-middle font-medium text-gray-500">Câmbio</th>
-                            <th className="h-12 px-4 align-middle font-medium text-gray-500">Total (BRL)</th>
+                            <th className="h-12 px-4 align-middle font-medium text-gray-500">Total ({currency})</th>
                             <th className="h-12 px-4 align-middle font-medium text-gray-500">Tipo</th>
                             <th className="h-12 px-4 align-middle font-medium text-gray-500 text-right">Ações</th>
                         </tr>
@@ -60,9 +62,9 @@ export function TransactionList({ purchases }: { purchases: Purchase[] }) {
                         {purchases.map((p) => (
                             <tr key={p.id} className="border-b transition-colors hover:bg-gray-50/50">
                                 <td className="p-4 align-middle">{new Date(p.date).toLocaleDateString("pt-BR", { timeZone: "UTC" })}</td>
-                                <td className="p-4 align-middle font-medium">{formatCurrency(Number(p.amountEur))}</td>
-                                <td className="p-4 align-middle">R$ {Number(p.exchangeRate).toLocaleString("pt-BR", { minimumFractionDigits: 3 })}</td>
-                                <td className="p-4 align-middle">R$ {Number(p.totalBrl).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                                <td className="p-4 align-middle font-medium">{formatCurrency(Number(p.amountEur), 'EUR')}</td>
+                                <td className="p-4 align-middle">{formatCurrency(Number(p.exchangeRate), currency)}</td>
+                                <td className="p-4 align-middle">{formatCurrency(Number(p.totalBrl), currency)}</td>
                                 <td className="p-4 align-middle capitalize">{p.type === "CASH" ? "Espécie" : "Conta"}</td>
                                 <td className="p-4 align-middle text-right">
                                     <button
@@ -92,7 +94,7 @@ export function TransactionList({ purchases }: { purchases: Purchase[] }) {
                                 <p className="text-sm text-gray-500">{new Date(p.date).toLocaleDateString("pt-BR", { timeZone: "UTC" })}</p>
                                 <div className="flex items-baseline gap-2">
                                     <span className="text-lg font-bold text-gray-900">
-                                        {formatCurrency(Number(p.amountEur))}
+                                        {formatCurrency(Number(p.amountEur), 'EUR')}
                                     </span>
                                     <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium">
                                         {p.type === "CASH" ? "Espécie" : "Conta"}
@@ -115,11 +117,11 @@ export function TransactionList({ purchases }: { purchases: Purchase[] }) {
                         <div className="grid grid-cols-2 gap-2 text-sm pt-2 border-t">
                             <div>
                                 <p className="text-gray-500 text-xs">Câmbio</p>
-                                <p className="font-medium">R$ {Number(p.exchangeRate).toLocaleString("pt-BR", { minimumFractionDigits: 3 })}</p>
+                                <p className="font-medium">{formatCurrency(Number(p.exchangeRate), currency)}</p>
                             </div>
                             <div className="text-right">
                                 <p className="text-gray-500 text-xs">Total investido</p>
-                                <p className="font-medium">R$ {Number(p.totalBrl).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
+                                <p className="font-medium">{formatCurrency(Number(p.totalBrl), currency)}</p>
                             </div>
                         </div>
                     </div>

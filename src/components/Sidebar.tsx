@@ -33,7 +33,7 @@ export function Sidebar() {
                     "font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600 transition-all duration-500 overflow-hidden whitespace-nowrap tracking-tight",
                     isCollapsed ? "text-[0px] opacity-0 w-0" : "text-2xl opacity-100 px-4"
                 )}>
-                    Plano Portugal
+                    ReStarta
                 </h1>
 
                 <button

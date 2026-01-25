@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Printer, Check, ShoppingBag, PieChart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ChecklistCategory, ChecklistItem, Purchase } from '@prisma/client';
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { getCurrencySymbol } from "@/lib/currencies";
 
 interface CategoryWithItems extends ChecklistCategory {
     items: ChecklistItem[];
@@ -22,6 +24,8 @@ interface PrintManagerProps {
 }
 
 export function PrintManager({ checklistCategories, purchases, userSettings, totals }: PrintManagerProps) {
+    const { currency } = useCurrency();
+    const currencySymbol = getCurrencySymbol(currency);
     const [options, setOptions] = useState({
         summary: true,
         checklist: true,
@@ -127,7 +131,7 @@ export function PrintManager({ checklistCategories, purchases, userSettings, tot
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 print:gap-2">
                             <div className="p-4 bg-zinc-50 rounded-lg print:border print:border-zinc-200 print:p-2">
                                 <p className="text-xs text-zinc-500 uppercase font-semibold print:text-[10px]">Total Acumulado</p>
-                                <p className="text-2xl font-bold text-blue-900 print:text-lg">€ {totals.totalEur.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                                <p className="text-2xl font-bold text-blue-900 print:text-lg">{currency} {totals.totalEur.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                             </div>
                             <div className="p-4 bg-zinc-50 rounded-lg print:border print:border-zinc-200 print:p-2">
                                 <p className="text-xs text-zinc-500 uppercase font-semibold print:text-[10px]">Investimento (R$)</p>
@@ -135,7 +139,7 @@ export function PrintManager({ checklistCategories, purchases, userSettings, tot
                             </div>
                             <div className="p-4 bg-zinc-50 rounded-lg print:border print:border-zinc-200 print:p-2">
                                 <p className="text-xs text-zinc-500 uppercase font-semibold print:text-[10px]">Meta</p>
-                                <p className="text-2xl font-bold text-zinc-700 print:text-lg">€ {userSettings.targetAmount.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</p>
+                                <p className="text-2xl font-bold text-zinc-700 print:text-lg">{currency} {userSettings.targetAmount.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</p>
                             </div>
                         </div>
                     </div>
@@ -192,7 +196,7 @@ export function PrintManager({ checklistCategories, purchases, userSettings, tot
                                 <tr>
                                     <th className="p-3 border-b print:p-1.5">Data</th>
                                     <th className="p-3 border-b print:p-1.5">Descrição</th>
-                                    <th className="p-3 border-b text-right print:p-1.5">Euros (€)</th>
+                                    <th className="p-3 border-b text-right print:p-1.5">{currency} ({currencySymbol})</th>
                                     <th className="p-3 border-b text-right print:p-1.5">Reais (R$)</th>
                                     <th className="p-3 border-b text-right print:p-1.5">Cotação</th>
                                 </tr>
@@ -202,7 +206,7 @@ export function PrintManager({ checklistCategories, purchases, userSettings, tot
                                     <tr key={p.id}>
                                         <td className="p-3 print:p-1.5">{new Date(p.date).toLocaleDateString('pt-BR')}</td>
                                         <td className="p-3 max-w-[200px] truncate print:p-1.5">{p.notes || '-'}</td>
-                                        <td className="p-3 text-right font-medium print:p-1.5">€ {Number(p.amountEur).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                                        <td className="p-3 text-right font-medium print:p-1.5">{currency} {Number(p.amountEur).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                                         <td className="p-3 text-right print:p-1.5">R$ {Number(p.totalBrl).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                                         <td className="p-3 text-right text-zinc-500 print:p-1.5">R$ {Number(p.exchangeRate).toLocaleString('pt-BR', { minimumFractionDigits: 3 })}</td>
                                     </tr>
@@ -219,7 +223,7 @@ export function PrintManager({ checklistCategories, purchases, userSettings, tot
 
                 {/* Footer */}
                 <div className="mt-12 pt-6 border-t text-center text-zinc-400 text-xs hidden print:block print:mt-4 print:pt-2 print:text-[10px]">
-                    Plano Portugal - Gerado automaticamente
+                    ReStarta - Gerado automaticamente
                 </div>
             </div>
         </div>

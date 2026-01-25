@@ -14,6 +14,8 @@ model User {
   name                String?
   age                 Int?
   phone               String?
+  currency            String               @default("EUR")
+  baseRate            Decimal              @default(6.60) @map("base_rate")
   targetAmount        Decimal              @default(0) @map("target_amount")
   createdAt           DateTime             @default(now()) @map("created_at")
   updatedAt           DateTime             @updatedAt @map("updated_at")

@@ -16,7 +16,7 @@ export default async function Home() {
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600 tracking-tight">
-              Plano Portugal
+              ReStarta
             </span>
           </div>
 
@@ -62,11 +62,11 @@ export default async function Home() {
           </div>
 
           <h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-gray-900 mb-6 text-balance">
-            Planeje sua vida em <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Portugal</span> de forma inteligente
+            Planeje seu recomeço. <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Execute a mudança.</span>
           </h1>
 
           <p className="text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Organize documentação, controle gastos em Euro, acompanhe checklists e receba dicas personalizadas. Tudo em um só lugar.
+            Tudo o que você precisa para mudar de país — organizado em um só lugar.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -188,7 +188,7 @@ export default async function Home() {
       {/* Footer */}
       <footer className="bg-white border-t border-gray-100 py-12">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-gray-400 text-sm">© 2026 Plano Portugal. Todos os direitos reservados.</p>
+          <p className="text-gray-400 text-sm">© 2026 ReStarta. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

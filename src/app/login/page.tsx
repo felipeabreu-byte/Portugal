@@ -63,7 +63,7 @@ export default function LoginPage() {
                             <LucideEuro className="h-8 w-8" />
                         </div>
                         <h2 className="text-4xl font-extrabold text-gray-900 tracking-tight">
-                            Plano Portugal
+                            ReStarta
                         </h2>
                         <p className="mt-2 text-base text-gray-600">
                             Bem-vindo de volta! Gerencie suas compras e planeje sua viagem.

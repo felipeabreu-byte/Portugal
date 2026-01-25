@@ -6,6 +6,7 @@ import { LucidePlus, LucideTrash2, LucideCalculator, LucideRotateCcw } from "luc
 import { createIncome, deleteIncome, updateIncome, createExpense, deleteExpense, loadSuggestions, updateExpense } from "@/actions/planning";
 import { formatCurrency, formatEuNumber, parseEuNumber } from "@/lib/utils";
 import { ConfirmationModal } from "@/components/UI/ConfirmationModal";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface Expense {
     id: string;
@@ -30,6 +31,8 @@ interface ExpensePlannerProps {
 
 export function ExpensePlanner({ initialExpenses, initialIncomes }: ExpensePlannerProps) {
     const router = useRouter();
+    const { currency } = useCurrency(); // Kept for context if needed
+    const currencyLabel = "€"; // Hardcoding to Euro for Planning
 
     // Expenses State
     const [expenses, setExpenses] = useState<Expense[]>(initialExpenses.map(e => ({ ...e, amountEur: Number(e.amountEur) })));
@@ -237,7 +240,7 @@ export function ExpensePlanner({ initialExpenses, initialIncomes }: ExpensePlann
                                     />
                                 </div>
                                 <div className="sm:col-span-3">
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">Mensal (€)</label>
+                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">Mensal ({currencyLabel})</label>
                                     <input
                                         type="text"
                                         className="w-full text-sm border-gray-200 rounded-lg focus:ring-green-500 focus:border-green-500"
@@ -284,7 +287,7 @@ export function ExpensePlanner({ initialExpenses, initialIncomes }: ExpensePlann
                                 <thead className="bg-gray-50 border-b border-gray-100">
                                     <tr>
                                         <th className="px-4 py-3 font-semibold text-gray-600">Descrição</th>
-                                        <th className="px-4 py-3 font-semibold text-gray-600 w-36">Valor Mensal</th>
+                                        <th className="px-4 py-3 font-semibold text-gray-600 w-36">Valor Mensal ({currencyLabel})</th>
                                         <th className="px-4 py-3 font-semibold text-gray-600 w-24">Início</th>
                                         <th className="px-4 py-3 font-semibold text-gray-600 w-24">Duração</th>
                                         <th className="px-4 py-3 font-semibold text-gray-600 w-28">Total</th>
@@ -336,7 +339,7 @@ export function ExpensePlanner({ initialExpenses, initialIncomes }: ExpensePlann
                                     />
                                 </div>
                                 <div className="sm:col-span-3">
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">Mensal (€)</label>
+                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">Mensal ({currencyLabel})</label>
                                     <input
                                         type="text"
                                         className="w-full text-sm border-gray-200 rounded-lg focus:ring-red-500 focus:border-red-500"
@@ -430,7 +433,7 @@ export function ExpensePlanner({ initialExpenses, initialIncomes }: ExpensePlann
                                     <span className="text-green-400 text-xs font-mono bg-green-900/50 px-2 py-0.5 rounded">+ Receita</span>
                                 </div>
                                 <p className="text-2xl font-bold tracking-tight text-green-400">
-                                    {formatCurrency(totalIncome)}
+                                    {formatCurrency(totalIncome, 'EUR')}
                                 </p>
                             </div>
 
@@ -442,7 +445,7 @@ export function ExpensePlanner({ initialExpenses, initialIncomes }: ExpensePlann
                                     <span className="text-red-400 text-xs font-mono bg-red-900/50 px-2 py-0.5 rounded">- Despesa</span>
                                 </div>
                                 <p className="text-2xl font-bold tracking-tight text-red-400">
-                                    {formatCurrency(totalCost)}
+                                    {formatCurrency(totalCost, 'EUR')}
                                 </p>
                             </div>
 
@@ -451,7 +454,7 @@ export function ExpensePlanner({ initialExpenses, initialIncomes }: ExpensePlann
                             <div>
                                 <p className="text-blue-100 text-sm mb-1 font-semibold">Saldo Final Estimado</p>
                                 <p className={`text-4xl font-extrabold tracking-tight ${netBalance >= 0 ? 'text-white' : 'text-red-300'}`}>
-                                    {formatCurrency(netBalance)}
+                                    {formatCurrency(netBalance, 'EUR')}
                                 </p>
                             </div>
 
@@ -476,6 +479,8 @@ export function ExpensePlanner({ initialExpenses, initialIncomes }: ExpensePlann
 }
 
 function EditableRow({ expense, onUpdate, onDelete, type }: { expense: Expense | Income, onUpdate: (data: Partial<Expense | Income>) => void, onDelete: () => void, type: 'income' | 'expense' }) {
+    const { currency } = useCurrency(); // kept if needed for something else
+
     // Local state for immediate feedback
     const [localData, setLocalData] = useState(expense);
     const [amountStr, setAmountStr] = useState(formatEuNumber(expense.amountEur));
@@ -573,7 +578,7 @@ function EditableRow({ expense, onUpdate, onDelete, type }: { expense: Expense |
             </td>
             {/* Total (Read-only) */}
             <td className={`px-4 py-3 font-bold ${type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                {formatCurrency(currentTotal)}
+                {formatCurrency(currentTotal, 'EUR')}
             </td>
             {/* Actions */}
             <td className="px-4 py-3 text-right">

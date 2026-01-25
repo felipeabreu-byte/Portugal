@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { LucideLayoutDashboard, LucidePlusCircle, LucideSettings, LucideLogOut, LucideMenu, LucideX, LucidePrinter, LucidePlane, LucideCalculator, LucideCheckSquare } from "lucide-react";
 import { signOut } from "next-auth/react";
 import clsx from "clsx";
+import { CurrencySelector } from "./CurrencySelector";
 
 export function MobileMenu() {
     const [isOpen, setIsOpen] = useState(false);
@@ -25,7 +26,7 @@ export function MobileMenu() {
         <>
             <div className="md:hidden fixed top-0 w-full bg-white/80 backdrop-blur-md border-b z-50 px-4 h-16 flex items-center justify-between shadow-sm print:hidden">
                 <h1 className="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600 tracking-tight">
-                    Plano Portugal
+                    ReStarta
                 </h1>
                 <button
                     onClick={() => setIsOpen(!isOpen)}
@@ -57,6 +58,11 @@ export function MobileMenu() {
                             </Link>
                         )
                     })}
+
+                    <div className="px-4 py-2">
+                        <CurrencySelector />
+                    </div>
+
                     <button
                         onClick={() => signOut({ callbackUrl: "/" })}
                         className="flex w-full items-center gap-3 px-4 py-4 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100 mt-4 active:scale-95"
@@ -64,8 +70,9 @@ export function MobileMenu() {
                         <LucideLogOut className="w-5 h-5" />
                         Sair
                     </button>
-                </div>
-            )}
+                </div >
+            )
+            }
         </>
     );
 }
