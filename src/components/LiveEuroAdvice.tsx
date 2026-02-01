@@ -9,21 +9,8 @@ export function LiveEuroAdvice() {
     const { currency } = useCurrency();
     const currencySymbol = getCurrencySymbol(currency);
     const [rate, setRate] = useState<number>(0);
-    const [baseRate, setBaseRate] = useState<number>(6.60);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
-    // Fetch base rate from settings
-    useEffect(() => {
-        fetch("/api/settings")
-            .then(res => res.json())
-            .then(data => {
-                if (data.baseRate) {
-                    setBaseRate(Number(data.baseRate));
-                }
-            })
-            .catch(err => console.error("Failed to fetch baseRate:", err));
-    }, []);
 
     useEffect(() => {
         const fetchRate = async () => {
@@ -83,5 +70,5 @@ export function LiveEuroAdvice() {
         return null;
     }
 
-    return <EuroAdviceCard currentRate={rate} currencySymbol={currencySymbol} baseRate={baseRate} />;
+    return <EuroAdviceCard currentRate={rate} currencySymbol={currencySymbol} currencyCode={currency} />;
 }

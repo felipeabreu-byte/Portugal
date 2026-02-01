@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import { LucideEuro, LucideTrendingUp, LucideTarget, LucideWallet, LucideCalculator } from "lucide-react";
 import { redirect } from "next/navigation";
 import { SummaryCard } from "@/components/SummaryCard";
-import { LiveEuroAdvice } from "@/components/LiveEuroAdvice";
 import { getChecklistCategories } from "@/actions/checklist";
 import { ChecklistList } from "@/components/Checklist/ChecklistList";
 import { GlobalChecklistProgress } from "@/components/Checklist/GlobalChecklistProgress";
@@ -64,6 +63,18 @@ export default async function DashboardPage() {
     const remaining = Math.max(0, targetAmount - totalEur);
     const progress = targetAmount > 0 ? Math.min(100, (totalEur / targetAmount) * 100) : 0;
 
+    // Calculate total invested in user's currency
+    // If user currency is EUR, use totalEur directly
+    // If user currency is BRL, use totalBrl
+    // For other currencies, we would need conversion (for now, show totalEur)
+    const userCurrency = user.currency || 'EUR';
+    let totalInvested = totalEur;
+    if (userCurrency === 'BRL') {
+        totalInvested = totalBrl;
+    }
+    // For other currencies, we're using the EUR amount as base
+    // In a full implementation, you'd convert based on exchange rates
+
     // Generate Suggestions
     const allChecklistItems = checklistCategories.flatMap((c: any) => c.items);
 
@@ -82,11 +93,6 @@ export default async function DashboardPage() {
 
     return (
         <div className="space-y-6">
-            {/* Live Advice Card (Client Side) */}
-            <div className="mb-2">
-                <LiveEuroAdvice />
-            </div>
-
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900">
@@ -110,20 +116,20 @@ export default async function DashboardPage() {
                 <SummaryCard
                     title="Total Acumulado"
                     icon={LucideEuro}
-                    value={formatCurrency(totalEur)}
-                    subtitle={`Investido: R$ ${totalBrl.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+                    value={formatCurrency(totalEur, userCurrency)}
+                    subtitle={`Investido: ${formatCurrency(totalInvested, userCurrency)}`}
                 />
                 <SummaryCard
                     title="Planejamento Pós-Chegada"
                     icon={LucideCalculator} // Using Calculator Icon
-                    value={formatCurrency(totalPlanned)}
+                    value={formatCurrency(totalPlanned, userCurrency)}
                     subtitle="Estimado para o início"
                 />
                 <SummaryCard
                     title="Meta"
                     icon={LucideTarget}
-                    value={formatCurrency(targetAmount)}
-                    subtitle={`Faltam ${formatCurrency(remaining)}`}
+                    value={formatCurrency(targetAmount, userCurrency)}
+                    subtitle={`Faltam ${formatCurrency(remaining, userCurrency)}`}
                 />
                 <SummaryCard
                     title="Progresso Financeiro"

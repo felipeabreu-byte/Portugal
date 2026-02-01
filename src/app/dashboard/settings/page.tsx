@@ -14,7 +14,6 @@ export default function SettingsPage() {
     const [age, setAge] = useState("");
     const [phone, setPhone] = useState("");
     const [currency, setCurrency] = useState("");
-    const [baseRate, setBaseRate] = useState("");
     const { setCurrency: setGlobalCurrency } = useCurrency();
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
@@ -29,7 +28,6 @@ export default function SettingsPage() {
                 if (data.age) setAge(data.age);
                 if (data.phone) setPhone(data.phone);
                 if (data.currency) setCurrency(data.currency);
-                if (data.baseRate) setBaseRate(data.baseRate);
             })
             .catch(err => console.error("Error fetching settings:", err))
             .finally(() => setFetching(false));
@@ -48,8 +46,7 @@ export default function SettingsPage() {
                     name,
                     age,
                     phone,
-                    currency,
-                    baseRate: Number(baseRate)
+                    currency
                 }),
                 headers: { "Content-Type": "application/json" },
             });
@@ -129,8 +126,9 @@ export default function SettingsPage() {
                                     placeholder="(00) 00000-0000"
                                 />
                             </div>
-                            <div>
+                            <div className="md:col-span-2">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Moeda Principal</label>
+                                <p className="text-xs text-gray-500 mb-2">Sua moeda de origem para conversões</p>
                                 <select
                                     className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-all p-2.5 border"
                                     value={currency}
@@ -142,18 +140,6 @@ export default function SettingsPage() {
                                         </option>
                                     ))}
                                 </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Taxa Base de Referência</label>
-                                <p className="text-xs text-gray-500 mb-2">Valor de referência para comparação no card de cotação</p>
-                                <input
-                                    type="number"
-                                    step="0.001"
-                                    className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-all p-2.5 border"
-                                    value={baseRate}
-                                    onChange={(e) => setBaseRate(e.target.value)}
-                                    placeholder="Ex: 6.60"
-                                />
                             </div>
                         </div>
                     </div>

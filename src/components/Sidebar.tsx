@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideLayoutDashboard, LucidePlusCircle, LucideLogOut, LucideSettings, LucideChevronLeft, LucideChevronRight, LucidePrinter, LucidePlane, LucideCalculator, LucideCheckSquare } from "lucide-react";
+import { LucideLayoutDashboard, LucidePlusCircle, LucideLogOut, LucideSettings, LucideChevronLeft, LucideChevronRight, LucidePrinter, LucidePlane, LucideCalculator, LucideCheckSquare, LucideCoins } from "lucide-react";
 import { signOut } from "next-auth/react";
 import clsx from "clsx";
 import { useSidebar } from "@/contexts/SidebarContext";
@@ -18,6 +18,7 @@ export function Sidebar() {
         { name: "Minha Viagem", href: "/dashboard/trip", icon: LucidePlane },
         { name: "Nova Compra", href: "/dashboard/purchases/new", icon: LucidePlusCircle },
         { name: "Planejamento", href: "/dashboard/planning", icon: LucideCalculator },
+        { name: "Conversor", href: "/dashboard/converter", icon: LucideCoins },
         { name: "Configurações", href: "/dashboard/settings", icon: LucideSettings },
     ];
 

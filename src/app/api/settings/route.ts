@@ -16,8 +16,7 @@ export async function GET(req: Request) {
             name: true,
             age: true,
             phone: true,
-            currency: true,
-            baseRate: true
+            currency: true
         }
     });
 
@@ -26,8 +25,7 @@ export async function GET(req: Request) {
         name: user?.name || "",
         age: user?.age || "", // Send as string for easier form handling if needed, or number
         phone: user?.phone || "",
-        currency: user?.currency || "EUR",
-        baseRate: user?.baseRate || 6.60
+        currency: user?.currency || "EUR"
     });
 }
 
@@ -36,7 +34,7 @@ export async function POST(req: Request) {
     if (!session?.user?.email) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
     const body = await req.json();
-    const { targetAmount, name, age, phone, currency, baseRate } = body;
+    const { targetAmount, name, age, phone, currency } = body;
 
     await prisma.user.update({
         where: { email: session.user.email },
@@ -45,8 +43,7 @@ export async function POST(req: Request) {
             name: name,
             age: age ? Number(age) : null,
             phone: phone,
-            currency: currency,
-            baseRate: Number(baseRate)
+            currency: currency
         }
     });
 

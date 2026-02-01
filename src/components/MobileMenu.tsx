@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideLayoutDashboard, LucidePlusCircle, LucideSettings, LucideLogOut, LucideMenu, LucideX, LucidePrinter, LucidePlane, LucideCalculator, LucideCheckSquare } from "lucide-react";
+import { LucideLayoutDashboard, LucidePlusCircle, LucideSettings, LucideLogOut, LucideMenu, LucideX, LucidePrinter, LucidePlane, LucideCalculator, LucideCheckSquare, LucideCoins } from "lucide-react";
 import { signOut } from "next-auth/react";
 import clsx from "clsx";
 import { CurrencySelector } from "./CurrencySelector";
@@ -19,6 +19,7 @@ export function MobileMenu() {
         { name: "Minha Viagem", href: "/dashboard/trip", icon: LucidePlane },
         { name: "Nova Compra", href: "/dashboard/purchases/new", icon: LucidePlusCircle },
         { name: "Planejamento", href: "/dashboard/planning", icon: LucideCalculator },
+        { name: "Conversor", href: "/dashboard/converter", icon: LucideCoins },
         { name: "Configurações", href: "/dashboard/settings", icon: LucideSettings },
     ];
 
