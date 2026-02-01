@@ -57,7 +57,6 @@ export async function deleteExpense(id: string) {
     if (!session?.user?.email) throw new Error("Unauthorized");
 
     await prisma.postArrivalExpense.delete({ where: { id } });
-    await prisma.postArrivalExpense.delete({ where: { id } });
     revalidatePath("/dashboard/planning");
 }
 

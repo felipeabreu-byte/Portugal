@@ -52,6 +52,12 @@ export function ExpensePlanner({ initialExpenses, initialIncomes }: ExpensePlann
 
     const [loading, setLoading] = useState(false);
 
+    // View Mode State (monthly or annual)
+    const [viewMode, setViewMode] = useState<'monthly' | 'annual'>('annual');
+
+    // Get current month
+    const currentMonth = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
     // Quick Add Expense State
     const [newExpDesc, setNewExpDesc] = useState("");
     const [newExpAmount, setNewExpAmount] = useState("");
@@ -171,9 +177,20 @@ export function ExpensePlanner({ initialExpenses, initialIncomes }: ExpensePlann
         router.refresh();
     };
 
-    const totalCost = expenses.reduce((acc, curr) => acc + (curr.amountEur * curr.durationMonths), 0);
-    const totalIncome = incomes.reduce((acc, curr) => acc + (curr.amountEur * curr.durationMonths), 0);
-    const netBalance = totalIncome - totalCost;
+    // Annual calculations (total)
+    const totalCostAnnual = expenses.reduce((acc, curr) => acc + (curr.amountEur * curr.durationMonths), 0);
+    const totalIncomeAnnual = incomes.reduce((acc, curr) => acc + (curr.amountEur * curr.durationMonths), 0);
+    const netBalanceAnnual = totalIncomeAnnual - totalCostAnnual;
+
+    // Monthly calculations (average)
+    const totalCostMonthly = expenses.reduce((acc, curr) => acc + curr.amountEur, 0);
+    const totalIncomeMonthly = incomes.reduce((acc, curr) => acc + curr.amountEur, 0);
+    const netBalanceMonthly = totalIncomeMonthly - totalCostMonthly;
+
+    // Current values based on view mode
+    const totalCost = viewMode === 'monthly' ? totalCostMonthly : totalCostAnnual;
+    const totalIncome = viewMode === 'monthly' ? totalIncomeMonthly : totalIncomeAnnual;
+    const netBalance = viewMode === 'monthly' ? netBalanceMonthly : netBalanceAnnual;
 
     return (
         <div className="space-y-8">
@@ -214,263 +231,288 @@ export function ExpensePlanner({ initialExpenses, initialIncomes }: ExpensePlann
                 </div>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-6">
-
-                {/* Main Content Column */}
-                <div className="lg:col-span-2 space-y-8">
-
-                    {/* --- INCOMES SECTION --- */}
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-2 text-green-700 mb-2">
-                            <div className="p-1.5 bg-green-100 rounded-lg"><LucidePlus size={18} /></div>
-                            <h4 className="font-bold text-lg">Rendas Previstas</h4>
-                        </div>
-
-                        {/* Add Income Form */}
-                        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm border-l-4 border-l-green-500">
-                            <h4 className="font-semibold mb-3 text-xs uppercase text-gray-500 tracking-wider">Nova Renda</h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
-                                <div className="sm:col-span-4">
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">Descrição</label>
-                                    <input
-                                        className="w-full text-sm border-gray-200 rounded-lg focus:ring-green-500 focus:border-green-500"
-                                        placeholder="Ex: Salário, Freela"
-                                        value={newIncDesc}
-                                        onChange={e => setNewIncDesc(e.target.value)}
-                                    />
-                                </div>
-                                <div className="sm:col-span-3">
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">Mensal ({currencyLabel})</label>
-                                    <input
-                                        type="text"
-                                        className="w-full text-sm border-gray-200 rounded-lg focus:ring-green-500 focus:border-green-500"
-                                        placeholder="0,00"
-                                        value={newIncAmount}
-                                        onChange={e => setNewIncAmount(e.target.value)}
-                                    />
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">Início (Mês)</label>
-                                    <select
-                                        className="w-full text-sm border-gray-200 rounded-lg"
-                                        value={newIncStart}
-                                        onChange={e => setNewIncStart(e.target.value)}
-                                    >
-                                        {[1, 2, 3, 4, 5, 6].map(m => <option key={m} value={m}>{m}º</option>)}
-                                    </select>
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">Duração</label>
-                                    <select
-                                        className="w-full text-sm border-gray-200 rounded-lg"
-                                        value={newIncDuration}
-                                        onChange={e => setNewIncDuration(e.target.value)}
-                                    >
-                                        {[1, 3, 6, 12, 24].map(m => <option key={m} value={m}>{m} meses</option>)}
-                                    </select>
-                                </div>
-                                <div className="sm:col-span-1">
-                                    <button
-                                        onClick={handleAddIncome}
-                                        disabled={loading}
-                                        className="w-full flex items-center justify-center p-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-                                    >
-                                        <LucidePlus size={18} />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Incomes List */}
-                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                            <table className="w-full text-left text-sm">
-                                <thead className="bg-gray-50 border-b border-gray-100">
-                                    <tr>
-                                        <th className="px-4 py-3 font-semibold text-gray-600">Descrição</th>
-                                        <th className="px-4 py-3 font-semibold text-gray-600 w-36">Valor Mensal ({currencyLabel})</th>
-                                        <th className="px-4 py-3 font-semibold text-gray-600 w-24">Início</th>
-                                        <th className="px-4 py-3 font-semibold text-gray-600 w-24">Duração</th>
-                                        <th className="px-4 py-3 font-semibold text-gray-600 w-28">Total</th>
-                                        <th className="px-4 py-3 font-semibold text-gray-600 text-right w-10"></th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100">
-                                    {incomes.length === 0 && (
-                                        <tr>
-                                            <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
-                                                Nenhuma renda planejada.
-                                            </td>
-                                        </tr>
-                                    )}
-                                    {incomes.map((income) => (
-                                        <EditableRow
-                                            key={income.id}
-                                            expense={income}
-                                            onUpdate={(data) => handleUpdateIncome(income.id, data)}
-                                            onDelete={() => setDeleteIncomeId(income.id)}
-                                            type="income"
-                                        />
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <hr className="border-gray-100" />
-
-                    {/* --- EXPENSES SECTION --- */}
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-2 text-red-700 mb-2">
-                            <div className="p-1.5 bg-red-100 rounded-lg"><LucideTrash2 size={18} /></div>
-                            <h4 className="font-bold text-lg">Gastos Previstos</h4>
-                        </div>
-
-                        {/* Add Expense Form */}
-                        <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm border-l-4 border-l-red-500">
-                            <h4 className="font-semibold mb-3 text-xs uppercase text-gray-500 tracking-wider">Novo Gasto</h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
-                                <div className="sm:col-span-4">
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">Descrição</label>
-                                    <input
-                                        className="w-full text-sm border-gray-200 rounded-lg focus:ring-red-500 focus:border-red-500"
-                                        placeholder="Ex: Aluguel"
-                                        value={newExpDesc}
-                                        onChange={e => setNewExpDesc(e.target.value)}
-                                    />
-                                </div>
-                                <div className="sm:col-span-3">
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">Mensal ({currencyLabel})</label>
-                                    <input
-                                        type="text"
-                                        className="w-full text-sm border-gray-200 rounded-lg focus:ring-red-500 focus:border-red-500"
-                                        placeholder="0,00"
-                                        value={newExpAmount}
-                                        onChange={e => setNewExpAmount(e.target.value)}
-                                    />
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">Início (Mês)</label>
-                                    <select
-                                        className="w-full text-sm border-gray-200 rounded-lg"
-                                        value={newExpStart}
-                                        onChange={e => setNewExpStart(e.target.value)}
-                                    >
-                                        {[1, 2, 3, 4, 5, 6].map(m => <option key={m} value={m}>{m}º</option>)}
-                                    </select>
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="text-xs font-semibold text-gray-500 mb-1 block">Duração</label>
-                                    <select
-                                        className="w-full text-sm border-gray-200 rounded-lg"
-                                        value={newExpDuration}
-                                        onChange={e => setNewExpDuration(e.target.value)}
-                                    >
-                                        {[1, 3, 6, 12, 24].map(m => <option key={m} value={m}>{m} meses</option>)}
-                                    </select>
-                                </div>
-                                <div className="sm:col-span-1">
-                                    <button
-                                        onClick={handleAddExpense}
-                                        disabled={loading}
-                                        className="w-full flex items-center justify-center p-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-                                    >
-                                        <LucidePlus size={18} />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Expenses List */}
-                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                            <table className="w-full text-left text-sm">
-                                <thead className="bg-gray-50 border-b border-gray-100">
-                                    <tr>
-                                        <th className="px-4 py-3 font-semibold text-gray-600">Descrição</th>
-                                        <th className="px-4 py-3 font-semibold text-gray-600 w-36">Valor Mensal</th>
-                                        <th className="px-4 py-3 font-semibold text-gray-600 w-24">Início</th>
-                                        <th className="px-4 py-3 font-semibold text-gray-600 w-24">Duração</th>
-                                        <th className="px-4 py-3 font-semibold text-gray-600 w-28">Total</th>
-                                        <th className="px-4 py-3 font-semibold text-gray-600 text-right w-10"></th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100">
-                                    {expenses.length === 0 && (
-                                        <tr>
-                                            <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
-                                                Nenhum gasto planejado.
-                                            </td>
-                                        </tr>
-                                    )}
-                                    {expenses.map((expense) => (
-                                        <EditableRow
-                                            key={expense.id}
-                                            expense={expense}
-                                            onUpdate={(data) => handleUpdateExpense(expense.id, data)}
-                                            onDelete={() => setDeleteExpenseId(expense.id)}
-                                            type="expense"
-                                        />
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Summary Column */}
-                <div className="lg:col-span-1">
-                    <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 text-white shadow-xl sticky top-6">
-                        <div className="flex items-center gap-3 mb-6">
+            {/* Financial Summary Card - Full Width */}
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-4 text-white shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                    <div>
+                        <div className="flex items-center gap-3">
                             <div className="bg-white/20 p-2 rounded-lg">
                                 <LucideCalculator size={24} className="text-white" />
                             </div>
-                            <h3 className="text-lg font-bold">Resumo Financeiro</h3>
-                        </div>
-
-                        <div className="space-y-6">
                             <div>
-                                <div className="flex justify-between items-end mb-1">
-                                    <p className="text-gray-400 text-xs uppercase tracking-wide">Renda Total</p>
-                                    <span className="text-green-400 text-xs font-mono bg-green-900/50 px-2 py-0.5 rounded">+ Receita</span>
-                                </div>
-                                <p className="text-2xl font-bold tracking-tight text-green-400">
-                                    {formatCurrency(totalIncome, 'EUR')}
-                                </p>
-                            </div>
-
-                            <div className="w-full h-px bg-gray-700/50"></div>
-
-                            <div>
-                                <div className="flex justify-between items-end mb-1">
-                                    <p className="text-gray-400 text-xs uppercase tracking-wide">Custo Total</p>
-                                    <span className="text-red-400 text-xs font-mono bg-red-900/50 px-2 py-0.5 rounded">- Despesa</span>
-                                </div>
-                                <p className="text-2xl font-bold tracking-tight text-red-400">
-                                    {formatCurrency(totalCost, 'EUR')}
-                                </p>
-                            </div>
-
-                            <div className="w-full h-px bg-gray-700/50"></div>
-
-                            <div>
-                                <p className="text-blue-100 text-sm mb-1 font-semibold">Saldo Final Estimado</p>
-                                <p className={`text-4xl font-extrabold tracking-tight ${netBalance >= 0 ? 'text-white' : 'text-red-300'}`}>
-                                    {formatCurrency(netBalance, 'EUR')}
-                                </p>
-                            </div>
-
-                            <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm border border-white/10 mt-4">
-                                <p className={`text-xs mb-2 font-bold uppercase tracking-wider ${netBalance >= 0 ? 'text-green-300' : 'text-red-300'}`}>
-                                    {netBalance >= 0 ? 'Bom Planejamento!' : 'Atenção Necessária'}
-                                </p>
-                                <p className="text-sm font-medium leading-relaxed text-gray-200">
-                                    {netBalance >= 0
-                                        ? "Sua renda cobre os gastos estimados. Continue assim para garantir uma reserva."
-                                        : "Seus gastos superam a renda prevista. Tente reduzir custos ou encontrar rendas extras."
-                                    }
-                                </p>
+                                <h3 className="text-lg font-bold">Resumo Financeiro</h3>
+                                <p className="text-sm text-gray-300 capitalize">{currentMonth}</p>
                             </div>
                         </div>
+                    </div>
 
+                    {/* Monthly/Annual Toggle */}
+                    <div className="flex bg-white/10 rounded-lg p-1 gap-1">
+                        <button
+                            onClick={() => setViewMode('monthly')}
+                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === 'monthly'
+                                ? 'bg-white text-gray-900 shadow-md'
+                                : 'text-gray-300 hover:text-white'
+                                }`}
+                        >
+                            Mensal
+                        </button>
+                        <button
+                            onClick={() => setViewMode('annual')}
+                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === 'annual'
+                                ? 'bg-white text-gray-900 shadow-md'
+                                : 'text-gray-300 hover:text-white'
+                                }`}
+                        >
+                            Anual
+                        </button>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <div className="flex justify-between items-end mb-1">
+                            <p className="text-gray-400 text-xs uppercase tracking-wide">
+                                Renda {viewMode === 'monthly' ? 'Mensal' : 'Total'}
+                            </p>
+                            <span className="text-green-400 text-xs font-mono bg-green-900/50 px-2 py-0.5 rounded">+ Receita</span>
+                        </div>
+                        <p className="text-2xl font-bold tracking-tight text-green-400">
+                            {formatCurrency(totalIncome, 'EUR')}
+                        </p>
+                    </div>
+
+                    <div>
+                        <div className="flex justify-between items-end mb-1">
+                            <p className="text-gray-400 text-xs uppercase tracking-wide">
+                                Custo {viewMode === 'monthly' ? 'Mensal' : 'Total'}
+                            </p>
+                            <span className="text-red-400 text-xs font-mono bg-red-900/50 px-2 py-0.5 rounded">- Despesa</span>
+                        </div>
+                        <p className="text-2xl font-bold tracking-tight text-red-400">
+                            {formatCurrency(totalCost, 'EUR')}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p className="text-blue-100 text-xs uppercase tracking-wide mb-1 font-semibold">
+                            Saldo {viewMode === 'monthly' ? 'Mensal' : 'Final'} Estimado
+                        </p>
+                        <p className={`text-3xl font-extrabold tracking-tight ${netBalance >= 0 ? 'text-white' : 'text-red-300'}`}>
+                            {formatCurrency(netBalance, 'EUR')}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm border border-white/10 mt-4">
+                    <p className={`text-xs mb-2 font-bold uppercase tracking-wider ${netBalance >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+                        {netBalance >= 0 ? 'Bom Planejamento!' : 'Atenção Necessária'}
+                    </p>
+                    <p className="text-sm font-medium leading-relaxed text-gray-200">
+                        {netBalance >= 0
+                            ? `Sua renda cobre os gastos estimados ${viewMode === 'monthly' ? 'mensais' : 'totais'}. Continue assim para garantir uma reserva.`
+                            : `Seus gastos superam a renda prevista ${viewMode === 'monthly' ? 'mensal' : 'total'}. Tente reduzir custos ou encontrar rendas extras.`
+                        }
+                    </p>
+                </div>
+            </div>
+
+            {/* Main Content - Incomes and Expenses */}
+            <div className="space-y-8">
+
+                {/* --- INCOMES SECTION --- */}
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-green-700 mb-2">
+                        <div className="p-1.5 bg-green-100 rounded-lg"><LucidePlus size={18} /></div>
+                        <h4 className="font-bold text-lg">Rendas Previstas</h4>
+                    </div>
+
+                    {/* Add Income Form */}
+                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm border-l-4 border-l-green-500">
+                        <h4 className="font-semibold mb-3 text-xs uppercase text-gray-500 tracking-wider">Nova Renda</h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                            <div className="sm:col-span-4">
+                                <label className="text-xs font-semibold text-gray-500 mb-1 block">Descrição</label>
+                                <input
+                                    className="w-full text-sm border-gray-200 rounded-lg focus:ring-green-500 focus:border-green-500"
+                                    placeholder="Ex: Salário, Freela"
+                                    value={newIncDesc}
+                                    onChange={e => setNewIncDesc(e.target.value)}
+                                />
+                            </div>
+                            <div className="sm:col-span-3">
+                                <label className="text-xs font-semibold text-gray-500 mb-1 block">Mensal ({currencyLabel})</label>
+                                <input
+                                    type="text"
+                                    className="w-full text-sm border-gray-200 rounded-lg focus:ring-green-500 focus:border-green-500"
+                                    placeholder="0,00"
+                                    value={newIncAmount}
+                                    onChange={e => setNewIncAmount(e.target.value)}
+                                />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="text-xs font-semibold text-gray-500 mb-1 block">Início (Mês)</label>
+                                <select
+                                    className="w-full text-sm border-gray-200 rounded-lg"
+                                    value={newIncStart}
+                                    onChange={e => setNewIncStart(e.target.value)}
+                                >
+                                    {[1, 2, 3, 4, 5, 6].map(m => <option key={m} value={m}>{m}º</option>)}
+                                </select>
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="text-xs font-semibold text-gray-500 mb-1 block">Duração</label>
+                                <select
+                                    className="w-full text-sm border-gray-200 rounded-lg"
+                                    value={newIncDuration}
+                                    onChange={e => setNewIncDuration(e.target.value)}
+                                >
+                                    {[1, 3, 6, 12, 24].map(m => <option key={m} value={m}>{m} meses</option>)}
+                                </select>
+                            </div>
+                            <div className="sm:col-span-1">
+                                <button
+                                    onClick={handleAddIncome}
+                                    disabled={loading}
+                                    className="w-full flex items-center justify-center p-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                                >
+                                    <LucidePlus size={18} />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Incomes List */}
+                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-gray-50 border-b border-gray-100">
+                                <tr>
+                                    <th className="px-4 py-3 font-semibold text-gray-600">Descrição</th>
+                                    <th className="px-4 py-3 font-semibold text-gray-600 w-36">Valor Mensal ({currencyLabel})</th>
+                                    <th className="px-4 py-3 font-semibold text-gray-600 w-24">Início</th>
+                                    <th className="px-4 py-3 font-semibold text-gray-600 w-24">Duração</th>
+                                    <th className="px-4 py-3 font-semibold text-gray-600 w-28">Total</th>
+                                    <th className="px-4 py-3 font-semibold text-gray-600 text-right w-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {incomes.length === 0 && (
+                                    <tr>
+                                        <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                                            Nenhuma renda planejada.
+                                        </td>
+                                    </tr>
+                                )}
+                                {incomes.map((income) => (
+                                    <EditableRow
+                                        key={income.id}
+                                        expense={income}
+                                        onUpdate={(data) => handleUpdateIncome(income.id, data)}
+                                        onDelete={() => setDeleteIncomeId(income.id)}
+                                        type="income"
+                                    />
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <hr className="border-gray-100" />
+
+                {/* --- EXPENSES SECTION --- */}
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-red-700 mb-2">
+                        <div className="p-1.5 bg-red-100 rounded-lg"><LucideTrash2 size={18} /></div>
+                        <h4 className="font-bold text-lg">Gastos Previstos</h4>
+                    </div>
+
+                    {/* Add Expense Form */}
+                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm border-l-4 border-l-red-500">
+                        <h4 className="font-semibold mb-3 text-xs uppercase text-gray-500 tracking-wider">Novo Gasto</h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                            <div className="sm:col-span-4">
+                                <label className="text-xs font-semibold text-gray-500 mb-1 block">Descrição</label>
+                                <input
+                                    className="w-full text-sm border-gray-200 rounded-lg focus:ring-red-500 focus:border-red-500"
+                                    placeholder="Ex: Aluguel"
+                                    value={newExpDesc}
+                                    onChange={e => setNewExpDesc(e.target.value)}
+                                />
+                            </div>
+                            <div className="sm:col-span-3">
+                                <label className="text-xs font-semibold text-gray-500 mb-1 block">Mensal ({currencyLabel})</label>
+                                <input
+                                    type="text"
+                                    className="w-full text-sm border-gray-200 rounded-lg focus:ring-red-500 focus:border-red-500"
+                                    placeholder="0,00"
+                                    value={newExpAmount}
+                                    onChange={e => setNewExpAmount(e.target.value)}
+                                />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="text-xs font-semibold text-gray-500 mb-1 block">Início (Mês)</label>
+                                <select
+                                    className="w-full text-sm border-gray-200 rounded-lg"
+                                    value={newExpStart}
+                                    onChange={e => setNewExpStart(e.target.value)}
+                                >
+                                    {[1, 2, 3, 4, 5, 6].map(m => <option key={m} value={m}>{m}º</option>)}
+                                </select>
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="text-xs font-semibold text-gray-500 mb-1 block">Duração</label>
+                                <select
+                                    className="w-full text-sm border-gray-200 rounded-lg"
+                                    value={newExpDuration}
+                                    onChange={e => setNewExpDuration(e.target.value)}
+                                >
+                                    {[1, 3, 6, 12, 24].map(m => <option key={m} value={m}>{m} meses</option>)}
+                                </select>
+                            </div>
+                            <div className="sm:col-span-1">
+                                <button
+                                    onClick={handleAddExpense}
+                                    disabled={loading}
+                                    className="w-full flex items-center justify-center p-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                                >
+                                    <LucidePlus size={18} />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Expenses List */}
+                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-gray-50 border-b border-gray-100">
+                                <tr>
+                                    <th className="px-4 py-3 font-semibold text-gray-600">Descrição</th>
+                                    <th className="px-4 py-3 font-semibold text-gray-600 w-36">Valor Mensal</th>
+                                    <th className="px-4 py-3 font-semibold text-gray-600 w-24">Início</th>
+                                    <th className="px-4 py-3 font-semibold text-gray-600 w-24">Duração</th>
+                                    <th className="px-4 py-3 font-semibold text-gray-600 w-28">Total</th>
+                                    <th className="px-4 py-3 font-semibold text-gray-600 text-right w-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {expenses.length === 0 && (
+                                    <tr>
+                                        <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                                            Nenhum gasto planejado.
+                                        </td>
+                                    </tr>
+                                )}
+                                {expenses.map((expense) => (
+                                    <EditableRow
+                                        key={expense.id}
+                                        expense={expense}
+                                        onUpdate={(data) => handleUpdateExpense(expense.id, data)}
+                                        onDelete={() => setDeleteExpenseId(expense.id)}
+                                        type="expense"
+                                    />
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

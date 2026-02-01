@@ -14,14 +14,15 @@ export function MobileMenu() {
 
     const links = [
         { name: "Dashboard", href: "/dashboard", icon: LucideLayoutDashboard },
-        { name: "Impressão", href: "/dashboard/print", icon: LucidePrinter },
-        { name: "Checklist", href: "/dashboard/checklist", icon: LucideCheckSquare },
-        { name: "Minha Viagem", href: "/dashboard/trip", icon: LucidePlane },
-        { name: "Nova Compra", href: "/dashboard/purchases/new", icon: LucidePlusCircle },
-        { name: "Planejamento", href: "/dashboard/planning", icon: LucideCalculator },
-        { name: "Conversor", href: "/dashboard/converter", icon: LucideCoins },
-        { name: "Configurações", href: "/dashboard/settings", icon: LucideSettings },
+        { name: "Impressão", href: "/impressao", icon: LucidePrinter },
+        { name: "Checklist", href: "/checklist", icon: LucideCheckSquare },
+        { name: "Minha Viagem", href: "/minha-viagem", icon: LucidePlane },
+        { name: "Nova Compra", href: "/nova-compra", icon: LucidePlusCircle },
+        { name: "Planejamento", href: "/planejamento", icon: LucideCalculator },
+        { name: "Conversor", href: "/conversor", icon: LucideCoins },
+        { name: "Configurações", href: "/configuracoes", icon: LucideSettings },
     ];
+
 
     return (
         <>
