@@ -84,7 +84,7 @@ export function generateSuggestions(items: ChecklistItem[], progress: number, co
             title: 'Defina sua Viagem',
             description: 'Cadastre a data da sua viagem para receber dicas personalizadas.',
             type: 'ACTION',
-            actionLink: '/dashboard/trip',
+            actionLink: '/configuracoes',
             actionLabel: 'Começar'
         });
     }

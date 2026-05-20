@@ -26,7 +26,7 @@ export function TravelInfoCard({ travelDate, city, profile }: TravelInfoCardProp
                     </div>
                 </div>
                 <Link
-                    href="/dashboard/trip"
+                    href="/configuracoes"
                     className="text-xs font-bold bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors"
                 >
                     Configurar
@@ -131,7 +131,7 @@ export function TravelInfoCard({ travelDate, city, profile }: TravelInfoCardProp
                     </div>
 
                     <Link
-                        href="/dashboard/trip"
+                        href="/configuracoes"
                         className="text-gray-500 hover:text-blue-600 hover:bg-white/50 p-2 rounded-full transition-all self-end sm:self-center"
                         title="Editar informações"
                     >

@@ -12,6 +12,8 @@ import { NotificationCenter } from "@/components/NotificationCenter";
 import { TravelInfoCard } from "@/components/Dashboard/TravelInfoCard";
 import { LogoutButton } from "@/components/LogoutButton";
 import { formatCurrency } from "@/lib/utils";
+import { TransactionList } from "@/components/TransactionList";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -56,6 +58,14 @@ export default async function DashboardPage() {
     const totalEur = purchases.reduce((acc: number, p: any) => acc + Number(p.amountEur), 0);
     const totalBrl = purchases.reduce((acc: number, p: any) => acc + Number(p.totalBrl), 0);
     const avgRate = totalEur > 0 ? totalBrl / totalEur : 0;
+
+    // Convert Decimals to plain numbers for the Client Component
+    const formattedPurchases = purchases.map((p: any) => ({
+        ...p,
+        amountEur: Number(p.amountEur),
+        exchangeRate: Number(p.exchangeRate),
+        totalBrl: Number(p.totalBrl),
+    }));
 
     const totalPlanned = postArrivalExpenses.reduce((acc: number, curr: any) => acc + (Number(curr.amountEur) * curr.durationMonths), 0);
 
@@ -117,7 +127,7 @@ export default async function DashboardPage() {
                     title="Total Acumulado"
                     icon={LucideEuro}
                     value={formatCurrency(totalEur, userCurrency)}
-                    subtitle={`Investido: ${formatCurrency(totalInvested, userCurrency)}`}
+                    subtitle={`Média: ${formatCurrency(avgRate, userCurrency)} | Total: ${formatCurrency(totalInvested, userCurrency)}`}
                 />
                 <SummaryCard
                     title="Planejamento Pós-Chegada"
@@ -144,6 +154,23 @@ export default async function DashboardPage() {
                 {/* Checklist Column */}
                 <div className="w-full">
                     {totalItems > 0 && <ChecklistList categories={checklistCategories} readOnly={true} />}
+                </div>
+
+                {/* Histórico de Compras de Euro */}
+                <div className="bg-white rounded-xl border shadow-sm p-6">
+                    <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
+                        <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
+                            <LucideWallet className="text-blue-600 w-5 h-5" />
+                            Histórico de Compras de Euro
+                        </h3>
+                        <Link
+                            href="/nova-compra"
+                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-sm transition-all hover:scale-105 active:scale-95 duration-200"
+                        >
+                            + Registrar Compra
+                        </Link>
+                    </div>
+                    <TransactionList purchases={formattedPurchases} />
                 </div>
             </div>
         </div>

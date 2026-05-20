@@ -16,7 +16,6 @@ export function MobileMenu() {
         { name: "Dashboard", href: "/dashboard", icon: LucideLayoutDashboard },
         { name: "Impressão", href: "/impressao", icon: LucidePrinter },
         { name: "Checklist", href: "/checklist", icon: LucideCheckSquare },
-        { name: "Minha Viagem", href: "/minha-viagem", icon: LucidePlane },
         { name: "Nova Compra", href: "/nova-compra", icon: LucidePlusCircle },
         { name: "Planejamento", href: "/planejamento", icon: LucideCalculator },
         { name: "Conversor", href: "/conversor", icon: LucideCoins },

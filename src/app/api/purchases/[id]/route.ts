@@ -27,7 +27,7 @@ export async function DELETE(
             return NextResponse.json({ message: "Purchase not found" }, { status: 404 });
         }
 
-        if (purchase.user.email !== session.user.email) {
+        if (purchase.user.email.toLowerCase().trim() !== session.user.email.toLowerCase().trim()) {
             return NextResponse.json({ message: "Forbidden" }, { status: 403 });
         }
 

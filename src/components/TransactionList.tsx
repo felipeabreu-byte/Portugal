@@ -53,7 +53,7 @@ export function TransactionList({ purchases }: { purchases: Purchase[] }) {
                             <th className="h-12 px-4 align-middle font-medium text-gray-500">Data</th>
                             <th className="h-12 px-4 align-middle font-medium text-gray-500">Valor (€)</th>
                             <th className="h-12 px-4 align-middle font-medium text-gray-500">Câmbio</th>
-                            <th className="h-12 px-4 align-middle font-medium text-gray-500">Total ({currency})</th>
+                            <th className="h-12 px-4 align-middle font-medium text-gray-500">Total (R$)</th>
                             <th className="h-12 px-4 align-middle font-medium text-gray-500">Tipo</th>
                             <th className="h-12 px-4 align-middle font-medium text-gray-500 text-right">Ações</th>
                         </tr>
@@ -63,8 +63,8 @@ export function TransactionList({ purchases }: { purchases: Purchase[] }) {
                             <tr key={p.id} className="border-b transition-colors hover:bg-gray-50/50">
                                 <td className="p-4 align-middle">{new Date(p.date).toLocaleDateString("pt-BR", { timeZone: "UTC" })}</td>
                                 <td className="p-4 align-middle font-medium">{formatCurrency(Number(p.amountEur), 'EUR')}</td>
-                                <td className="p-4 align-middle">{formatCurrency(Number(p.exchangeRate), currency)}</td>
-                                <td className="p-4 align-middle">{formatCurrency(Number(p.totalBrl), currency)}</td>
+                                <td className="p-4 align-middle">{formatCurrency(Number(p.exchangeRate), 'BRL')}</td>
+                                <td className="p-4 align-middle">{formatCurrency(Number(p.totalBrl), 'BRL')}</td>
                                 <td className="p-4 align-middle capitalize">{p.type === "CASH" ? "Espécie" : "Conta"}</td>
                                 <td className="p-4 align-middle text-right">
                                     <button
@@ -117,11 +117,11 @@ export function TransactionList({ purchases }: { purchases: Purchase[] }) {
                         <div className="grid grid-cols-2 gap-2 text-sm pt-2 border-t">
                             <div>
                                 <p className="text-gray-500 text-xs">Câmbio</p>
-                                <p className="font-medium">{formatCurrency(Number(p.exchangeRate), currency)}</p>
+                                <p className="font-medium">{formatCurrency(Number(p.exchangeRate), 'BRL')}</p>
                             </div>
                             <div className="text-right">
                                 <p className="text-gray-500 text-xs">Total investido</p>
-                                <p className="font-medium">{formatCurrency(Number(p.totalBrl), currency)}</p>
+                                <p className="font-medium">{formatCurrency(Number(p.totalBrl), 'BRL')}</p>
                             </div>
                         </div>
                     </div>

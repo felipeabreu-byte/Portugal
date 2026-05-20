@@ -29,5 +29,5 @@ export async function updateTravelDetails(data: {
     });
 
     revalidatePath("/dashboard");
-    revalidatePath("/dashboard/trip");
+    revalidatePath("/configuracoes");
 }

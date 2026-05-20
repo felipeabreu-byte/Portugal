@@ -53,7 +53,7 @@ export function ExpensePlanner({ initialExpenses, initialIncomes }: ExpensePlann
     const [loading, setLoading] = useState(false);
 
     // View Mode State (monthly or annual)
-    const [viewMode, setViewMode] = useState<'monthly' | 'annual'>('annual');
+    const [viewMode, setViewMode] = useState<'monthly' | 'annual'>('monthly');
 
     // Get current month
     const currentMonth = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });

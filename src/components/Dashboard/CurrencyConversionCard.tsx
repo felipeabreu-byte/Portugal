@@ -179,7 +179,7 @@ export function CurrencyConversionCard() {
                             />
                         </div>
                         <p className="text-xs text-gray-500 mt-1">
-                            Configure em <a href="/dashboard/settings" className="text-blue-600 hover:underline">Configurações</a>
+                            Configure em <a href="/configuracoes" className="text-blue-600 hover:underline">Configurações</a>
                         </p>
                     </div>
                 </div>

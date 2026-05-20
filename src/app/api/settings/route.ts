@@ -16,7 +16,10 @@ export async function GET(req: Request) {
             name: true,
             age: true,
             phone: true,
-            currency: true
+            currency: true,
+            travelDate: true,
+            city: true,
+            profile: true
         }
     });
 
@@ -25,7 +28,10 @@ export async function GET(req: Request) {
         name: user?.name || "",
         age: user?.age || "", // Send as string for easier form handling if needed, or number
         phone: user?.phone || "",
-        currency: user?.currency || "EUR"
+        currency: user?.currency || "EUR",
+        travelDate: user?.travelDate ? user.travelDate.toISOString() : null,
+        city: user?.city || null,
+        profile: user?.profile || null
     });
 }
 
