@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideLayoutDashboard, LucidePlusCircle, LucideLogOut, LucideSettings, LucideChevronLeft, LucideChevronRight, LucidePrinter, LucidePlane, LucideCalculator, LucideCheckSquare, LucideCoins } from "lucide-react";
+import { LucideLayoutDashboard, LucidePlusCircle, LucideLogOut, LucideSettings, LucideChevronLeft, LucideChevronRight, LucidePrinter, LucidePlane, LucideCalculator, LucideCheckSquare, LucideCoins, LucideGift, LucideExternalLink } from "lucide-react";
 import { signOut } from "next-auth/react";
 import clsx from "clsx";
 import { useSidebar } from "@/contexts/SidebarContext";
+
+const WISE_URL = process.env.NEXT_PUBLIC_WISE_URL || "https://wise.com";
+const NOMAD_URL = process.env.NEXT_PUBLIC_NOMAD_URL || "https://nomadglobal.com";
 
 export function Sidebar() {
     const pathname = usePathname();
@@ -83,6 +86,76 @@ export function Sidebar() {
                     )
                 })}
             </nav>
+
+            {/* Affiliate Widget */}
+            <div className={clsx(
+                "px-4 py-3 mx-4 mb-4 rounded-2xl bg-gray-50 border border-gray-100 transition-all duration-300 relative overflow-hidden group/widget",
+                isCollapsed ? "opacity-0 h-0 p-0 m-0 overflow-hidden pointer-events-none" : "opacity-100"
+            )}>
+                <div className="flex items-center gap-2 mb-1.5">
+                    <div className="p-1 rounded-lg bg-blue-50 text-blue-600">
+                        <LucideGift className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="text-[13px] font-bold text-gray-800">Contas Globais</span>
+                </div>
+                <p className="text-[12px] text-gray-500 mb-2 leading-relaxed">
+                    Economize nas taxas abrindo sua conta pelos links parceiros.
+                </p>
+                <div className="flex flex-col gap-1.5">
+                    <a
+                        href={WISE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between px-2 py-1 rounded-lg bg-emerald-600 text-white text-[13px] hover:bg-emerald-700 transition-all shadow-sm"
+                    >
+                        <span>Wise (Taxa Zero)</span>
+                        <LucideExternalLink className="w-3 h-3 text-yellow-400" />
+                    </a>
+                    <a
+                        href={NOMAD_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between px-2 py-1 rounded-lg bg-black text-white text-[13px] hover:bg-gray-800 transition-all shadow-sm"
+                    >
+                        <span>Nomad (Cashback)</span>
+                        <LucideExternalLink className="w-3 h-3 text-yellow-400" />
+                    </a>
+                </div>
+            </div>
+
+            {/* Collapsed Gift Icon with Popover Tooltip */}
+            {isCollapsed && (
+                <div className="relative group/tooltip flex justify-center pb-4">
+                    <div className="p-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl cursor-pointer transition-all hover:scale-110">
+                        <LucideGift className="w-4 h-4" />
+                    </div>
+                    {/* Tooltip Content */}
+                    <div className="absolute left-full ml-3 bottom-0 w-44 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-300 z-50 pointer-events-auto">
+                        <p className="text-[12px] font-extrabold text-gray-800 mb-2 uppercase tracking-wide">Contas Globais</p>
+                        <div className="flex flex-col gap-1.5">
+                            <a
+                                href={WISE_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between px-2 py-1 rounded-lg bg-emerald-600 text-white text-[13px] hover:bg-emerald-700 transition-colors"
+                            >
+                                <span>Wise</span>
+                                <LucideExternalLink className="w-3 h-3 text-yellow-400" />
+                            </a>
+                            <a
+                                href={NOMAD_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between px-2 py-1 rounded-lg bg-black text-white text-[13px] hover:bg-gray-800 transition-colors"
+                            >
+                                <span>Nomad</span>
+                                <LucideExternalLink className="w-3 h-3 text-yellow-400" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="p-4 border-t border-gray-100">
                 <button
                     onClick={() => signOut({ callbackUrl: "/" })}

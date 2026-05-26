@@ -14,6 +14,7 @@ import { LogoutButton } from "@/components/LogoutButton";
 import { formatCurrency } from "@/lib/utils";
 import { TransactionList } from "@/components/TransactionList";
 import Link from "next/link";
+import { AffiliateModal } from "@/components/AffiliateModal";
 
 export const dynamic = "force-dynamic";
 
@@ -103,6 +104,7 @@ export default async function DashboardPage() {
 
     return (
         <div className="space-y-6">
+            <AffiliateModal />
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900">

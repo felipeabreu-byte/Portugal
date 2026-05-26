@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LucideTrash2, Loader2 } from "lucide-react";
+import { LucideTrash2, Loader2, LucidePencil } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import Link from "next/link";
 
 type Purchase = {
     id: string;
@@ -67,17 +68,27 @@ export function TransactionList({ purchases }: { purchases: Purchase[] }) {
                                 <td className="p-4 align-middle">{formatCurrency(Number(p.totalBrl), 'BRL')}</td>
                                 <td className="p-4 align-middle capitalize">{p.type === "CASH" ? "Espécie" : "Conta"}</td>
                                 <td className="p-4 align-middle text-right">
-                                    <button
-                                        onClick={() => handleDelete(p.id)}
-                                        disabled={deletingId === p.id}
-                                        className="text-red-500 hover:text-red-700 transition-colors p-2 rounded-full hover:bg-red-50 disabled:opacity-50"
-                                    >
-                                        {deletingId === p.id ? (
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                        ) : (
-                                            <LucideTrash2 className="h-4 w-4" />
-                                        )}
-                                    </button>
+                                    <div className="flex justify-end gap-2">
+                                        <Link
+                                            href={`/editar-compra/${p.id}`}
+                                            className="text-blue-500 hover:text-blue-700 transition-colors p-2 rounded-full hover:bg-blue-50"
+                                            title="Editar compra"
+                                        >
+                                            <LucidePencil className="h-4 w-4" />
+                                        </Link>
+                                        <button
+                                            onClick={() => handleDelete(p.id)}
+                                            disabled={deletingId === p.id}
+                                            className="text-red-500 hover:text-red-700 transition-colors p-2 rounded-full hover:bg-red-50 disabled:opacity-50"
+                                            title="Excluir compra"
+                                        >
+                                            {deletingId === p.id ? (
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <LucideTrash2 className="h-4 w-4" />
+                                            )}
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}
@@ -101,17 +112,27 @@ export function TransactionList({ purchases }: { purchases: Purchase[] }) {
                                     </span>
                                 </div>
                             </div>
-                            <button
-                                onClick={() => handleDelete(p.id)}
-                                disabled={deletingId === p.id}
-                                className="text-red-500 hover:text-red-700 p-2 -mr-2"
-                            >
-                                {deletingId === p.id ? (
-                                    <Loader2 className="h-5 w-5 animate-spin" />
-                                ) : (
-                                    <LucideTrash2 className="h-5 w-5" />
-                                )}
-                            </button>
+                            <div className="flex items-center gap-1 -mr-2">
+                                <Link
+                                    href={`/editar-compra/${p.id}`}
+                                    className="text-blue-500 hover:text-blue-700 p-2"
+                                    title="Editar compra"
+                                >
+                                    <LucidePencil className="h-5 w-5" />
+                                </Link>
+                                <button
+                                    onClick={() => handleDelete(p.id)}
+                                    disabled={deletingId === p.id}
+                                    className="text-red-500 hover:text-red-700 p-2"
+                                    title="Excluir compra"
+                                >
+                                    {deletingId === p.id ? (
+                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                    ) : (
+                                        <LucideTrash2 className="h-5 w-5" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-2 text-sm pt-2 border-t">

@@ -11,5 +11,6 @@ export const config = {
         "/dashboard/:path*",
         "/settings/:path*",
         "/purchases/:path*",
+        "/editar-compra/:path*",
     ]
 };
