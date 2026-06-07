@@ -3,16 +3,35 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideLayoutDashboard, LucidePlusCircle, LucideSettings, LucideLogOut, LucideMenu, LucideX, LucidePrinter, LucidePlane, LucideCalculator, LucideCheckSquare, LucideCoins } from "lucide-react";
+import { 
+    LucideLayoutDashboard, 
+    LucidePlusCircle, 
+    LucideSettings, 
+    LucideLogOut, 
+    LucideMenu, 
+    LucideX, 
+    LucidePrinter, 
+    LucidePlane, 
+    LucideCalculator, 
+    LucideCheckSquare, 
+    LucideCoins,
+    LucideHome,
+    LucideFileText,
+    LucideBriefcase,
+    LucidePhone,
+    LucideTrendingUp
+} from "lucide-react";
 import { signOut } from "next-auth/react";
 import clsx from "clsx";
 import { CurrencySelector } from "./CurrencySelector";
+import { useUser } from "@/contexts/UserContext";
 
 export function MobileMenu() {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
+    const { phase } = useUser();
 
-    const links = [
+    const preArrivalLinks = [
         { name: "Dashboard", href: "/dashboard", icon: LucideLayoutDashboard },
         { name: "Impressão", href: "/impressao", icon: LucidePrinter },
         { name: "Checklist", href: "/checklist", icon: LucideCheckSquare },
@@ -21,6 +40,19 @@ export function MobileMenu() {
         { name: "Conversor", href: "/conversor", icon: LucideCoins },
         { name: "Configurações", href: "/configuracoes", icon: LucideSettings },
     ];
+
+    const postArrivalLinks = [
+        { name: "Dashboard", href: "/dashboard", icon: LucideLayoutDashboard },
+        { name: "Instalação", href: "/pos-chegada/instalacao", icon: LucideHome },
+        { name: "Documentação", href: "/pos-chegada/documentacao", icon: LucideFileText },
+        { name: "Finanças", href: "/pos-chegada/financas", icon: LucideCoins },
+        { name: "Trabalho", href: "/pos-chegada/trabalho", icon: LucideBriefcase },
+        { name: "Primeiros Passos", href: "/pos-chegada/primeiros-passos", icon: LucideCheckSquare },
+        { name: "Serviços Úteis", href: "/pos-chegada/servicos-uteis", icon: LucidePhone },
+        { name: "Evolução", href: "/pos-chegada/evolucao", icon: LucideTrendingUp },
+    ];
+
+    const links = phase === "POST_ARRIVAL" ? postArrivalLinks : preArrivalLinks;
 
 
     return (

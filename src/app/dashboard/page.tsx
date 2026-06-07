@@ -15,6 +15,9 @@ import { formatCurrency } from "@/lib/utils";
 import { TransactionList } from "@/components/TransactionList";
 import Link from "next/link";
 import { AffiliateModal } from "@/components/AffiliateModal";
+import { getPostArrivalDashboardData } from "@/actions/post-arrival";
+import { PostArrivalDashboard } from "@/components/Dashboard/PostArrivalDashboard";
+import { ArrivalButton } from "@/components/Dashboard/ArrivalButton";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +49,17 @@ export default async function DashboardPage() {
                 <div className="text-gray-600 mt-2">Você está logado como: {session.user.email}</div>
                 <div className="text-yellow-600 mt-1 text-sm">Este usuário não existe no banco de dados.</div>
                 <LogoutButton />
+            </div>
+        );
+    }
+
+    // Check user phase
+    if (user.phase === "POST_ARRIVAL") {
+        const postArrivalData = await getPostArrivalDashboardData();
+        return (
+            <div className="space-y-6">
+                <AffiliateModal />
+                <PostArrivalDashboard data={postArrivalData} userName={user.name || "Viajante"} />
             </div>
         );
     }
@@ -112,7 +126,10 @@ export default async function DashboardPage() {
                     </h2>
                     {user.name && <p className="text-gray-500">Vamos planejar sua jornada!</p>}
                 </div>
-                <NotificationCenter suggestions={suggestions} />
+                <div className="flex items-center gap-3">
+                    <ArrivalButton />
+                    <NotificationCenter suggestions={suggestions} />
+                </div>
             </div>
 
             <TravelInfoCard

@@ -2,10 +2,30 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideLayoutDashboard, LucidePlusCircle, LucideLogOut, LucideSettings, LucideChevronLeft, LucideChevronRight, LucidePrinter, LucidePlane, LucideCalculator, LucideCheckSquare, LucideCoins, LucideGift, LucideExternalLink } from "lucide-react";
+import { 
+    LucideLayoutDashboard, 
+    LucidePlusCircle, 
+    LucideLogOut, 
+    LucideSettings, 
+    LucideChevronLeft, 
+    LucideChevronRight, 
+    LucidePrinter, 
+    LucidePlane, 
+    LucideCalculator, 
+    LucideCheckSquare, 
+    LucideCoins, 
+    LucideGift, 
+    LucideExternalLink,
+    LucideHome,
+    LucideFileText,
+    LucideBriefcase,
+    LucidePhone,
+    LucideTrendingUp
+} from "lucide-react";
 import { signOut } from "next-auth/react";
 import clsx from "clsx";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { useUser } from "@/contexts/UserContext";
 
 const WISE_URL = process.env.NEXT_PUBLIC_WISE_URL || "https://wise.com";
 const NOMAD_URL = process.env.NEXT_PUBLIC_NOMAD_URL || "https://nomadglobal.com";
@@ -13,8 +33,9 @@ const NOMAD_URL = process.env.NEXT_PUBLIC_NOMAD_URL || "https://nomadglobal.com"
 export function Sidebar() {
     const pathname = usePathname();
     const { isCollapsed, toggleSidebar } = useSidebar();
+    const { phase } = useUser();
 
-    const links = [
+    const preArrivalLinks = [
         { name: "Dashboard", href: "/dashboard", icon: LucideLayoutDashboard },
         { name: "Impressão", href: "/impressao", icon: LucidePrinter },
         { name: "Checklist", href: "/checklist", icon: LucideCheckSquare },
@@ -23,6 +44,19 @@ export function Sidebar() {
         { name: "Conversor", href: "/conversor", icon: LucideCoins },
         { name: "Configurações", href: "/configuracoes", icon: LucideSettings },
     ];
+
+    const postArrivalLinks = [
+        { name: "Dashboard", href: "/dashboard", icon: LucideLayoutDashboard },
+        { name: "Instalação", href: "/pos-chegada/instalacao", icon: LucideHome },
+        { name: "Documentação", href: "/pos-chegada/documentacao", icon: LucideFileText },
+        { name: "Finanças", href: "/pos-chegada/financas", icon: LucideCoins },
+        { name: "Trabalho", href: "/pos-chegada/trabalho", icon: LucideBriefcase },
+        { name: "Primeiros Passos", href: "/pos-chegada/primeiros-passos", icon: LucideCheckSquare },
+        { name: "Serviços Úteis", href: "/pos-chegada/servicos-uteis", icon: LucidePhone },
+        { name: "Evolução", href: "/pos-chegada/evolucao", icon: LucideTrendingUp },
+    ];
+
+    const links = phase === "POST_ARRIVAL" ? postArrivalLinks : preArrivalLinks;
 
 
     return (

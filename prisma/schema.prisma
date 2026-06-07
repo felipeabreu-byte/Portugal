@@ -22,10 +22,20 @@ model User {
   city                String?
   profile             UserProfile?         @default(TOURIST)
   travelDate          DateTime?            @map("travel_date")
+  phase               UserPhase            @default(PRE_ARRIVAL)
+  arrivalDate         DateTime?            @map("arrival_date")
+  housingStatus       HousingStatus        @default(TEMPORARY) @map("housing_status")
+  housingMonthly      Decimal?             @map("housing_monthly")
+  housingCity         String?              @map("housing_city")
+  housingStartDate    DateTime?            @map("housing_start_date")
+  housingTempDays     Int?                 @map("housing_temp_days")
   checklistItems      ChecklistItem[]
   postArrivalExpenses PostArrivalExpense[]
   postArrivalIncomes  PostArrivalIncome[]
   purchases           Purchase[]
+  postArrivalDocs     PostArrivalDoc[]
+  postArrivalTasks    PostArrivalTask[]
+  postArrivalFinanceItems PostArrivalFinanceItem[]
 
   @@map("users")
 }
@@ -123,4 +133,61 @@ enum ChecklistPriority {
   MEDIUM
   HIGH
   CRITICAL
+}
+
+enum UserPhase {
+  PRE_ARRIVAL
+  POST_ARRIVAL
+}
+
+enum HousingStatus {
+  TEMPORARY
+  SEARCHING
+  DEFINITIVE
+}
+
+model PostArrivalDoc {
+  id           String     @id @default(uuid())
+  userId       String     @map("user_id")
+  type         String     // 'NIF', 'NISS', 'UTENTE', 'RESIDENCIA', 'CONTA_BANCARIA', 'COMPROVATIVO_MORADA'
+  status       String     @default("NOT_STARTED") // 'NOT_STARTED', 'IN_PROGRESS', 'COMPLETED'
+  emissionDate DateTime?  @map("emission_date")
+  notes        String?
+  fileUrl      String?    @map("file_url")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, type])
+  @@map("post_arrival_docs")
+}
+
+model PostArrivalTask {
+  id            String     @id @default(uuid())
+  userId        String     @map("user_id")
+  timeframe     String     // '24H', 'WEEK', 'MONTH'
+  title         String
+  status        String     @default("PENDING") // 'PENDING', 'COMPLETED'
+  completedAt   DateTime?  @map("completed_at")
+  notes         String?
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, timeframe, title])
+  @@map("post_arrival_tasks")
+}
+
+model PostArrivalFinanceItem {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  type        String   // 'INCOME', 'EXPENSE'
+  category    String   // 'Salário', 'Freelance', 'Outros', 'Aluguel', 'Alimentação', 'Transporte', 'Telecomunicações', etc.
+  description String
+  amountEur   Decimal  @map("amount_eur")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("post_arrival_finance_items")
 }

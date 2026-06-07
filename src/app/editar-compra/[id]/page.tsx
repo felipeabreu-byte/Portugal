@@ -118,7 +118,7 @@ export default function EditPurchasePage() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto">
+        <div className="w-full">
             <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Editar Compra</h2>
                 <p className="text-gray-500">Atualize as informações da compra de Euro</p>

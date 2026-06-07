@@ -146,7 +146,7 @@ export default function ConverterPage() {
             </div>
 
             {/* Converter Card */}
-            <div className="bg-white rounded-xl border shadow-sm p-6 max-w-4xl">
+            <div className="bg-white rounded-xl border shadow-sm p-6 w-full">
                 <div className="space-y-6">
                     {/* Amount Input */}
                     <div>

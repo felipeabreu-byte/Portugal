@@ -28,9 +28,19 @@ export function generateSuggestions(items: ChecklistItem[], progress: number, co
     // 5. Fallback
 
     if (context?.travelDate) {
-        const diffTime = context.travelDate.getTime() - today.getTime();
-        const daysToTravel = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        const travelMonth = context.travelDate.getMonth(); // 0-11 for Date objects
+        const travelUtcObj = new Date(context.travelDate);
+        const travelYear = travelUtcObj.getUTCFullYear();
+        const travelMonth = travelUtcObj.getUTCMonth();
+        const travelDay = travelUtcObj.getUTCDate();
+        const travelMidnightUtc = Date.UTC(travelYear, travelMonth, travelDay);
+
+        const todayYear = today.getUTCFullYear();
+        const todayMonth = today.getUTCMonth();
+        const todayDay = today.getUTCDate();
+        const todayMidnightUtc = Date.UTC(todayYear, todayMonth, todayDay);
+
+        const diffTime = travelMidnightUtc - todayMidnightUtc;
+        const daysToTravel = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
         // Season Logic for Portugal (Northern Hemisphere)
         // Dec(11), Jan(0), Feb(1) -> Winter

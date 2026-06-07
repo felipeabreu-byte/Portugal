@@ -36,27 +36,43 @@ export function TravelInfoCard({ travelDate, city, profile }: TravelInfoCardProp
     }
 
     const calculatedDate = travelDate ? new Date(travelDate) : new Date();
-    const formattedDate = travelDate ? calculatedDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Data não definida';
+    const formattedDate = travelDate 
+        ? calculatedDate.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }) 
+        : 'Data não definida';
 
-    // Helper: Days Remaining
-    const today = new Date();
-    const diffTime = calculatedDate.getTime() - today.getTime();
-    const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    // Helper: Days Remaining (timezone-safe date comparison)
+    let daysRemaining = 0;
+    if (travelDate) {
+        const travelYear = calculatedDate.getUTCFullYear();
+        const travelMonth = calculatedDate.getUTCMonth();
+        const travelDay = calculatedDate.getUTCDate();
+        const travelMidnightUtc = Date.UTC(travelYear, travelMonth, travelDay);
+
+        const localToday = new Date();
+        const todayMidnightUtc = Date.UTC(localToday.getFullYear(), localToday.getMonth(), localToday.getDate());
+
+        const diffTime = travelMidnightUtc - todayMidnightUtc;
+        daysRemaining = Math.round(diffTime / (1000 * 60 * 60 * 24));
+    }
 
     let timeString = "";
-    if (daysRemaining < 0) {
-        timeString = "Viagem realizada";
-    } else if (daysRemaining === 0) {
-        timeString = "É hoje!";
-    } else if (daysRemaining > 30) {
-        const months = Math.floor(daysRemaining / 30);
-        timeString = `Faltam ${months} meses`;
+    if (travelDate) {
+        if (daysRemaining < 0) {
+            timeString = "Viagem realizada";
+        } else if (daysRemaining === 0) {
+            timeString = "É hoje!";
+        } else if (daysRemaining > 30) {
+            const months = Math.floor(daysRemaining / 30);
+            timeString = `Faltam ${months} meses`;
+        } else {
+            timeString = `Faltam ${daysRemaining} dias`;
+        }
     } else {
-        timeString = `Faltam ${daysRemaining} dias`;
+        timeString = "Data não definida";
     }
 
     // Helper: Season
-    const month = calculatedDate.getMonth(); // 0-11
+    const month = travelDate ? calculatedDate.getUTCMonth() : new Date().getMonth(); // 0-11
     // Portugal Season (Northern Hemisphere)
     // Dec(11), Jan(0), Feb(1) -> Winter
     // Mar(2), Apr(3), May(4) -> Spring
@@ -102,7 +118,18 @@ export function TravelInfoCard({ travelDate, city, profile }: TravelInfoCardProp
                                 <LucideCalendar size={14} className="text-gray-500" />
                                 <div className="flex flex-col">
                                     <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Data</span>
-                                    <span className="text-sm font-semibold text-gray-900">{formattedDate}</span>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="text-sm font-semibold text-gray-900">{formattedDate}</span>
+                                        {travelDate && (
+                                            <span className="text-xs font-semibold text-blue-600 bg-blue-50/80 px-2 py-0.5 rounded-full border border-blue-100 shadow-sm">
+                                                {daysRemaining > 0 
+                                                    ? `Faltam ${daysRemaining} ${daysRemaining === 1 ? 'dia' : 'dias'}` 
+                                                    : daysRemaining === 0 
+                                                        ? 'É hoje!' 
+                                                        : 'Viagem realizada'}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
